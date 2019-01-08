@@ -24,4 +24,4 @@ def generate_window_coeffs(windowSize,windowType='hanning'):
     if windowType.lower() is 'hanning':
         return np.sqrt(np.hanning(windowSize))
     else: # Default to rectangular window
-        return np.ones(M)
+        return np.ones(windowSize)
