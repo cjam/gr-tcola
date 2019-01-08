@@ -21,27 +21,24 @@
 
 import numpy as np
 from gnuradio import gr
+from TcolaBase import TcolaBase
 
-class overlap_add(gr.decim_block):
+class overlap_add(TcolaBase,gr.decim_block):
     """
     docstring for block overlap_add
     """
-    def __init__(self, windowSize=100,hopSize=50):
-        verify_tcola_params(windowSize,hopSize)
-        ratio = int(windowSize/hopSize)
+    def __init__(self, windowSize=100,hopSize=50,windowType='hanning'):
+        TcolaBase.__init__(self,windowSize,hopSize,windowType)
         gr.decim_block.__init__(self,
             name="overlap_add",
             in_sig=[np.float32],
             out_sig=[np.float32], 
-            decim=ratio
+            decim=self.ratio
         )
-        self.windowSize = windowSize
-        self.hopSize = hopSize
-        self.delayMatrix = np.zeros([windowSize,ratio)])
-
+        self.normalizationGain = self.ratio/2.0
 
     def work(self, input_items, output_items):
-        in0 = input_items[0]
+        inputSignal = input_items[0]
         out = output_items[0]
         M = self.windowSize
         R = self.hopSize
@@ -49,41 +46,38 @@ class overlap_add(gr.decim_block):
         outputSignal = np.asarray([])
 
         # Iterate through the input samples
-    for sample in inputSignal:
+        for sample in inputSignal:
 
-        # Commutate the input samples. Each input sample has only
-        # one destination. Apply the window coeffs.
-        delayMatrix[inPhaseCnt, -(inPhaseCnt/R+1)] = sample*winCoeffs[inPhaseCnt]
- 
-        # Increment the phase counter
-        inPhaseCnt += 1
+            # Commutate the input samples. Each input sample has only
+            # one destination. Apply the window coeffs.
+            self.delayMatrix[self.inPhaseCnt, -(self.inPhaseCnt/R+1)] = sample*self.windowCoeffs[self.inPhaseCnt]
+    
+            # Increment the phase counter
+            self.inPhaseCnt += 1
 
-        # Process if we have reached the window size 
-        # Internally each phase runs at f2/M = f1/R 
-        if inPhaseCnt == M:
+            # Process if we have reached the window size 
+            # Internally each phase runs at f2/M = f1/R 
+            if self.inPhaseCnt == M:
 
-            # Create the R output phases by adding the appropriate R/M phases together
-            # from the last column of the delay matrix.
-            # delayMatrix[n::R, -1] means from the last (-1) column, 
-            # take every Rth row, starting from n.
-            filtOutput = np.zeros(R)
-            for n in np.arange(0, R):
-                filtOutput[n] = np.sum(delayMatrix[n::R,-1])
+                # Create the R output phases by adding the appropriate R/M phases together
+                # from the last column of the delay matrix.
+                # delayMatrix[n::R, -1] means from the last (-1) column, 
+                # take every Rth row, starting from n.
+                filtOutput = np.zeros(R)
+                for n in np.arange(0, R):
+                    filtOutput[n] = np.sum(self.delayMatrix[n::R,-1])*self.normalizationGain
 
-            # Normalize the output gain.
-            filtOutput /= M/(2.0*R)
+                # "Interpolate" by serializing all R output phases (output commutator)
+                outputSignal = np.concatenate([outputSignal, filtOutput])
 
-            # "Interpolate" by serializing all R output phases (output commutator)
-            outputSignal = np.concatenate([outputSignal, filtOutput])
+                # Shift the columns of the delay matrix to the right.
+                # delayMatrix[:,1:] means all rows from columns 1 to the end.
+                # delayMatrix[:,:-1] means all rows from the first column up to but not 
+                # including the last column.
+                self.delayMatrix[:,1:] = self.delayMatrix[:,:-1]
 
-            # Shift the columns of the delay matrix to the right.
-            # delayMatrix[:,1:] means all rows from columns 1 to the end.
-            # delayMatrix[:,:-1] means all rows from the first column up to but not 
-            # including the last column.
-            delayMatrix[:,1:] = delayMatrix[:,:-1]
-
-            # Reset the counter.
-            inPhaseCnt = 0
+                # Reset the counter.
+                inPhaseCnt = 0
 
         out[:] = outputSignal
         return len(out)

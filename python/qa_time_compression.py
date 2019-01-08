@@ -50,7 +50,7 @@ class qa_time_compression (gr_unittest.TestCase):
         expected_result = (0,1,1,2,2,3,3,4)
         
         src = blocks.vector_source_f(src_data)
-        op = time_compression(M,R,True)
+        op = time_compression(M,R,'rect')
         dst = blocks.vector_sink_f()
 
         self.tb.connect(src,op)
@@ -69,7 +69,7 @@ class qa_time_compression (gr_unittest.TestCase):
         expected_result = (0,0,0,1,0,0,1,2,0,1,2,3,1,2,3,4)
         
         src = blocks.vector_source_f(src_data)
-        op = time_compression(M,R,True)
+        op = time_compression(M,R,'rect')
         dst = blocks.vector_sink_f()
 
         self.tb.connect(src,op)
@@ -89,7 +89,7 @@ class qa_time_compression (gr_unittest.TestCase):
         expected_result = (0,0,1,2,1,2,3,4)
         
         src = blocks.vector_source_f(src_data)
-        op = time_compression(M,R,True)
+        op = time_compression(M,R,'rect')
         dst = blocks.vector_sink_f()
 
         self.tb.connect(src,op)
@@ -108,7 +108,7 @@ class qa_time_compression (gr_unittest.TestCase):
         expected_result = [1,2,3,4]
 
         src = blocks.vector_source_f(src_data)
-        op = time_compression(M,R,True)
+        op = time_compression(M,R,'rect')
         dst = blocks.vector_sink_f()
 
         self.tb.connect(src,op)
@@ -135,7 +135,6 @@ class qa_time_compression (gr_unittest.TestCase):
 
         # check data
         result_data = dst.data()[:]
-        
         self.assertFloatTuplesAlmostEqual(result_data,expected_result,4)
 
     def test_window_overlapping (self):

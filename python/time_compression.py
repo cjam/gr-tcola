@@ -21,33 +21,21 @@
 
 import numpy as np
 from gnuradio import gr
-from utils import verify_tcola_params
+from TcolaBase import TcolaBase
 
-class time_compression(gr.interp_block):    
+class time_compression(TcolaBase,gr.interp_block):    
     """
     docstring for block time_compression
     """
-    def __init__(self, windowSize=100,hopSize=50,use_rect_window=False):
-        verify_tcola_params(windowSize,hopSize)
-        ratio = int(windowSize/hopSize)
+    def __init__(self, windowSize=100,hopSize=50,windowType='hanning'):
+        TcolaBase.__init__(self,windowSize,hopSize,windowType)
         gr.interp_block.__init__(self,
             name="time_compression",    # Block Name
-            in_sig=[np.float32],     # Input Signal
-            out_sig=[np.float32],    # Output Signal
-            interp=ratio                # Interpolation
+            in_sig=[np.float32],        # Input Signal
+            out_sig=[np.float32],       # Output Signal
+            interp=self.ratio           # Interpolation
         )                
-        self.windowSize = windowSize
-        self.hopSize = hopSize
-        self.delayMatrix = np.zeros([windowSize,ratio])  # Delay Lines. Only lower/right triangle is used.
-        
-        # Window Function
-        if use_rect_window:
-            self.windowCoeffs = np.ones(windowSize+1)[:-1] 
-        else:
-            self.windowCoeffs = np.sqrt(np.hanning(windowSize))[:]
-
-        self.inPhaseCnt = 0
-
+    
     def work(self, input_items, output_items):
         in0 = input_items[0]
         out = output_items[0]

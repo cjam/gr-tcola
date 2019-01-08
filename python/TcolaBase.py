@@ -33,7 +33,7 @@ class TcolaBase(object):
             :param windowSize: 
             :param windowType='hanning': the type of window 'hanning' or 'rectangular' 
         """
-        if windowType.lower() is 'hanning':
+        if windowType.lower() == 'hanning':
             return np.sqrt(np.hanning(windowSize))
         else: # Default to rectangular window
             return np.ones(windowSize)
