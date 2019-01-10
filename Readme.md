@@ -30,6 +30,13 @@ or for verbose test output
 ctest --force-new-ctest-process -V
 ```
 
+or to rerun failed tests
+
+```sh
+ctest --force-new-ctest-process -V --rerun-failed
+```
+
+
 ### Installing
 
 ```sh

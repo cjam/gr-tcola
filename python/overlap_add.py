@@ -35,7 +35,12 @@ class overlap_add(TcolaBase,gr.decim_block):
             out_sig=[np.float32], 
             decim=self.ratio
         )
-        self.normalizationGain = self.ratio/2.0
+        if windowType == 'hanning':
+            self.normalizationGain = self.ratio/2.0
+        elif windowType == 'rect':
+            self.normalizationGain = 1.0/self.ratio
+
+        # print "Normalization Gain", self.normalizationGain
 
     def work(self, input_items, output_items):
         inputSignal = input_items[0]
@@ -43,7 +48,7 @@ class overlap_add(TcolaBase,gr.decim_block):
         M = self.windowSize
         R = self.hopSize
 
-        outputSignal = np.asarray([])
+        outputSignal = np.asarray([]) 
 
         # Iterate through the input samples
         for sample in inputSignal:
@@ -77,7 +82,7 @@ class overlap_add(TcolaBase,gr.decim_block):
                 self.delayMatrix[:,1:] = self.delayMatrix[:,:-1]
 
                 # Reset the counter.
-                inPhaseCnt = 0
+                self.inPhaseCnt = 0
 
         out[:] = outputSignal
         return len(out)

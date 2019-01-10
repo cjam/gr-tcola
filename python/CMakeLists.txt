@@ -32,7 +32,8 @@ GR_PYTHON_INSTALL(
     FILES
     __init__.py
     time_compression.py
-    overlap_add.py DESTINATION ${GR_PYTHON_DIR}/tcola
+    overlap_add.py 
+    TcolaBase.py DESTINATION ${GR_PYTHON_DIR}/tcola
 )
 
 ########################################################################

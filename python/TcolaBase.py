@@ -5,11 +5,12 @@ class TcolaBase(object):
     def __init__(self, windowSize=100,hopSize=50,windowType='hanning'):
         TcolaBase.verify_tcola_params(windowSize,hopSize)
 
+        self.windowType = windowType
         self.windowSize = windowSize
         self.hopSize = hopSize
         self.ratio = int(windowSize/hopSize)
         self.delayMatrix = np.zeros([windowSize,self.ratio]) 
-        self.windowCoeffs = TcolaBase.generate_window_coeffs(windowSize,windowType)
+        self.windowCoeffs = self.generate_window_coeffs()
         self.inPhaseCnt = 0
 
     @staticmethod
@@ -25,15 +26,12 @@ class TcolaBase(object):
             raise ValueError("Window Size (windowSize) must be greater or equal to Hop Size (hopSize)")
         if windowSize/float(hopSize) != floor(windowSize/float(hopSize)):
             raise ValueError("Window Size must be divisible by Hop Size" )
-        
-    @staticmethod
-    def generate_window_coeffs(windowSize,windowType='hanning'):
+
+    def generate_window_coeffs(self):
         """
         Generates Window Coefficients for a given window size and type
-            :param windowSize: 
-            :param windowType='hanning': the type of window 'hanning' or 'rectangular' 
         """
-        if windowType.lower() == 'hanning':
-            return np.sqrt(np.hanning(windowSize))
+        if self.windowType.lower() == 'hanning':
+            return np.sqrt(np.hanning(self.windowSize+1))[:-1]
         else: # Default to rectangular window
-            return np.ones(windowSize)
+            return np.ones(self.windowSize)
