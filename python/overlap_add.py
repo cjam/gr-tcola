@@ -36,7 +36,7 @@ class overlap_add(TcolaBase,gr.decim_block):
             decim=self.ratio
         )
         if windowType == 'hanning':
-            self.normalizationGain = self.ratio/2.0
+            self.normalizationGain = 2.0/self.ratio
         elif windowType == 'rect':
             self.normalizationGain = 1.0/self.ratio
 
