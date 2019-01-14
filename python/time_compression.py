@@ -34,43 +34,28 @@ class time_compression(TcolaBase,gr.interp_block):
             in_sig=[np.float32],        # Input Signal
             out_sig=[np.float32],       # Output Signal
             interp=self.ratio           # Interpolation
-        )                
-    
+        )
+        self.set_history(windowSize)
+        self.set_output_multiple(windowSize)
+
     def work(self, input_items, output_items):
-        in0 = input_items[0]
+        inputSignal = input_items[0]
         out = output_items[0]
         M = self.windowSize
         R = self.hopSize
 
         outputSignal = np.asarray([])
+        
+        self.log("Input",inputSignal)
+        for index in np.arange(0,len(inputSignal)-R,R):
+            if index + M > len(inputSignal):
+                break
+            self.log("Index",index)
+            windowed_input = inputSignal[index:index+M]*self.windowCoeffs
+            self.log("Windowed Input",windowed_input)            
+            outputSignal=np.concatenate([outputSignal[:], windowed_input[:]])
 
-        for sample in in0:
-            # Commutate the input samples. Each input sample has M/R destinations. 
-            for n in np.arange(0, M/R):
-                self.delayMatrix[n*R+self.inPhaseCnt, n] = sample
-            # Increment the phase counter
-            self.inPhaseCnt += 1
-
-            # Process if we have reached the hop size. Internally each phase
-            # runs at f1/R. 
-            if self.inPhaseCnt == R:
-
-                # "Interpolate" by serializing all M phases from the last column of the delay matrix
-                # multiplied by the window coeffs (output commutator)
-                # delayMatrix[:,-1] means all rows from the last column.
-                # The output sample rate is f2 = f1*M/R
-                outputSignal = np.concatenate([outputSignal, self.delayMatrix[:,-1]*self.windowCoeffs])
-
-                # Shift the columns of the delay matrix to the right.
-                # delayMatrix[:,1:] means all rows from columns 1 to the end.
-                # delayMatrix[:,:-1] means all rows from column 0 up to but not 
-                # including the last column.
-                self.delayMatrix[:,1:] = self.delayMatrix[:,:-1]
-
-                # Reset the counter.
-                self.inPhaseCnt = 0
-
-        # <+signal processing here+>
+        # print "Output Signal",outputSignal
         out[:] = outputSignal
         return len(out)
 
