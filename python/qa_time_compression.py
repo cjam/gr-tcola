@@ -51,6 +51,7 @@ class qa_time_compression (gr_unittest.TestCase):
         
         src = blocks.vector_source_f(src_data)
         op = time_compression(M,R,'rect')
+        #op.debug = True
         dst = blocks.vector_sink_f()
 
         self.tb.connect(src,op)
@@ -70,6 +71,7 @@ class qa_time_compression (gr_unittest.TestCase):
         
         src = blocks.vector_source_f(src_data)
         op = time_compression(M,R,'rect')
+        #op.debug = True
         dst = blocks.vector_sink_f()
 
         self.tb.connect(src,op)
@@ -89,6 +91,7 @@ class qa_time_compression (gr_unittest.TestCase):
         
         src = blocks.vector_source_f(src_data)
         op = time_compression(M,R,'rect')
+        op.debug = True
         dst = blocks.vector_sink_f()
 
         self.tb.connect(src,op)

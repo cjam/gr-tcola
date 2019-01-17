@@ -35,8 +35,20 @@ class time_compression(TcolaBase,gr.interp_block):
             out_sig=[np.float32],       # Output Signal
             interp=self.ratio           # Interpolation
         )
-        self.set_history(windowSize)
+        
         self.set_output_multiple(windowSize)
+        self.set_history(windowSize)        
+    
+    def forecast(self,noutput_items,ninput_items_required):
+        for i in range(len(ninput_items_required)):
+            ninput_items_required[i]=noutput_items*self.hopSize/self.windowSize
+
+    def start(self):
+        forecasted = [0]
+        self.forecast(self.windowSize,forecasted)
+        self.log("Forecast",forecasted)
+
+        return True
 
     def work(self, input_items, output_items):
         inputSignal = input_items[0]
@@ -44,18 +56,13 @@ class time_compression(TcolaBase,gr.interp_block):
         M = self.windowSize
         R = self.hopSize
 
-        outputSignal = np.asarray([])
-        
-        self.log("Input",inputSignal)
+        outCount = 0
+        # self.log("Input",inputSignal)
         for index in np.arange(0,len(inputSignal)-R,R):
             if index + M > len(inputSignal):
-                break
-            self.log("Index",index)
-            windowed_input = inputSignal[index:index+M]*self.windowCoeffs
-            self.log("Windowed Input",windowed_input)            
-            outputSignal=np.concatenate([outputSignal[:], windowed_input[:]])
-
-        # print "Output Signal",outputSignal
-        out[:] = outputSignal
-        return len(out)
+                break     
+            out[outCount:outCount+M] = inputSignal[index:index+M]*self.windowCoeffs
+            outCount = outCount + M   
+        
+        return outCount
 

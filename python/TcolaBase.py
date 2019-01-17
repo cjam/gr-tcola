@@ -10,7 +10,6 @@ class TcolaBase(object):
         self.windowSize = windowSize
         self.hopSize = hopSize
         self.ratio = int(windowSize/hopSize)
-        self.delayMatrix = np.zeros([windowSize,self.ratio]) 
         self.windowCoeffs = self.generate_window_coeffs()
         self.inPhaseCnt = 0
         
