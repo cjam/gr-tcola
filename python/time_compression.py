@@ -40,8 +40,9 @@ class time_compression(TcolaBase,gr.interp_block):
         self.set_history(windowSize)        
     
     def forecast(self,noutput_items,ninput_items_required):
+        n_required = int((noutput_items+1.0)*self.hopSize/self.windowSize)+self.history()-1
         for i in range(len(ninput_items_required)):
-            ninput_items_required[i]=noutput_items*self.hopSize/self.windowSize
+            ninput_items_required[i]= n_required
 
     def start(self):
         forecasted = [0]
