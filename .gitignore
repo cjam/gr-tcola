@@ -14,3 +14,6 @@ CTestTestfile.cmake
 
 build/
 .ropeproject/
+
+# Ignore the flow graph entry py files
+top_block.py

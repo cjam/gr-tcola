@@ -1,3 +1,4 @@
+from __future__ import print_function
 import numpy as np
 from math import floor
 
@@ -9,9 +10,10 @@ class TcolaBase(object):
         self.windowSize = windowSize
         self.hopSize = hopSize
         self.ratio = int(windowSize/hopSize)
-        self.delayMatrix = np.zeros([windowSize,self.ratio]) 
         self.windowCoeffs = self.generate_window_coeffs()
         self.inPhaseCnt = 0
+        
+        self.debug = False
 
     @staticmethod
     def verify_tcola_params(windowSize,hopSize):
@@ -35,3 +37,10 @@ class TcolaBase(object):
             return np.sqrt(np.hanning(self.windowSize+1))[:-1]
         else: # Default to rectangular window
             return np.ones(self.windowSize)
+
+    def log(self,*args):
+        if(self.debug):
+            for v in args:
+                print(v,' ',end='')
+            print('')
+
