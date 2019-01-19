@@ -22,5 +22,5 @@
 ########################################################################
 install(FILES
     api.h
-    DESTINATION include/tcola
+    time_compression.h DESTINATION include/tcola
 )

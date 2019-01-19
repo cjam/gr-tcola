@@ -71,16 +71,15 @@ class overlap_add(TcolaBase,gr.decim_block):
             if index + M > len(inputSignal):
                 break
             # self.log("Index",index)
-            windowed_input = inputSignal[index:index+M]*self.windowCoeffs
-            # self.log("Windowed Input",windowed_input)  
-            self.outputWindow = np.add(self.outputWindow,windowed_input)
+            self.outputWindow = np.add(self.outputWindow,inputSignal[index:index+M]*self.windowCoeffs)
             # self.log("Output Window", self.outputWindow)
             out[outCount:outCount+R] = self.outputWindow[0:R]*self.normalizationGain
-            outCount = outCount + R
             # self.log("Output Signal", out)
-            self.outputWindow = np.concatenate((self.outputWindow[R:], np.zeros(R)))
+            self.outputWindow[0:-R] = self.outputWindow[R:]
+            self.outputWindow[-R:] = np.zeros(R)
             # self.log("Output Window", self.outputWindow)
+            outCount = outCount + R
 
-        
+        #print("OLA OUT:",outCount)
         return outCount
 

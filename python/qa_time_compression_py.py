@@ -19,9 +19,10 @@
 # Boston, MA 02110-1301, USA.
 # 
 
+import numpy as np
 from gnuradio import gr, gr_unittest
 from gnuradio import blocks
-import tcola_swig as tcola
+from time_compression import time_compression 
 
 class qa_time_compression (gr_unittest.TestCase):
 
@@ -31,14 +32,9 @@ class qa_time_compression (gr_unittest.TestCase):
     def tearDown (self):
         self.tb = None
 
-    def test_001_t (self):
-        # set up fg
-        self.tb.run ()
-        # check data
-
     def test_invalid_parameters (self):
         with self.assertRaises(ValueError):
-            tcola.time_compression(4,0)
+            time_compression(4,0)
         
         with self.assertRaises(ValueError):
             time_compression(4,8)
@@ -67,85 +63,85 @@ class qa_time_compression (gr_unittest.TestCase):
         op.log(result_data, expected_result)
         self.assertFloatTuplesAlmostEqual(result_data,expected_result,4)
 
-    # def test_m4_r1 (self):
-    #     M=4
-    #     R=1
-    #     src_data = [1,2,3,4]
-    #     expected_result = (0,0,0,1,0,0,1,2,0,1,2,3,1,2,3,4)
+    def test_m4_r1 (self):
+        M=4
+        R=1
+        src_data = [1,2,3,4]
+        expected_result = (0,0,0,1,0,0,1,2,0,1,2,3,1,2,3,4)
         
-    #     src = blocks.vector_source_f(src_data)
-    #     op = time_compression(M,R,'rect')
-    #     #op.debug = True
-    #     dst = blocks.vector_sink_f()
+        src = blocks.vector_source_f(src_data)
+        op = time_compression(M,R,'rect')
+        #op.debug = True
+        dst = blocks.vector_sink_f()
 
-    #     self.tb.connect(src,op)
-    #     self.tb.connect(op,dst)
-    #     self.tb.run()
+        self.tb.connect(src,op)
+        self.tb.connect(op,dst)
+        self.tb.run()
 
-    #     # check data
-    #     result_data = dst.data()[:]
-    #     op.log(result_data, expected_result)
-    #     self.assertFloatTuplesAlmostEqual(result_data,expected_result,4)
+        # check data
+        result_data = dst.data()[:]
+        op.log(result_data, expected_result)
+        self.assertFloatTuplesAlmostEqual(result_data,expected_result,4)
 
-    # def test_basic_m4_r2 (self):
-    #     M=4
-    #     R=2
-    #     src_data = [1,2,3,4,5,6]
-    #     expected_result = (0,0,0,1,0,1,2,3,2,3,4,5)
+    def test_basic_m4_r2 (self):
+        M=4
+        R=2
+        src_data = [1,2,3,4,5,6]
+        expected_result = (0,0,0,1,0,1,2,3,2,3,4,5)
         
-    #     src = blocks.vector_source_f(src_data)
-    #     op = time_compression(M,R,'rect')
-    #     op.debug = True
-    #     dst = blocks.vector_sink_f()
+        src = blocks.vector_source_f(src_data)
+        op = time_compression(M,R,'rect')
+        op.debug = True
+        dst = blocks.vector_sink_f()
 
-    #     self.tb.connect(src,op)
-    #     self.tb.connect(op,dst)
-    #     self.tb.run()
+        self.tb.connect(src,op)
+        self.tb.connect(op,dst)
+        self.tb.run()
 
-    #     # check data
-    #     result_data = dst.data()[:]
-    #     op.log(result_data, expected_result)
-    #     self.assertFloatTuplesAlmostEqual(result_data,expected_result,4)
+        # check data
+        result_data = dst.data()[:]
+        op.log(result_data, expected_result)
+        self.assertFloatTuplesAlmostEqual(result_data,expected_result,4)
 
-    # def test_basic_m4_r4 (self):
-    #     M=4
-    #     R=4
-    #     src_data = [1,2,3,4,5,6,7,8]
-    #     expected_result = [0,0,0,1,2,3,4,5]
+    def test_basic_m4_r4 (self):
+        M=4
+        R=4
+        src_data = [1,2,3,4,5,6,7,8]
+        expected_result = [0,0,0,1,2,3,4,5]
 
-    #     src = blocks.vector_source_f(src_data)
-    #     op = time_compression(M,R,'rect')
-    #     dst = blocks.vector_sink_f()
+        src = blocks.vector_source_f(src_data)
+        op = time_compression(M,R,'rect')
+        dst = blocks.vector_sink_f()
 
-    #     self.tb.connect(src,op)
-    #     self.tb.connect(op,dst)
-    #     self.tb.run()
+        self.tb.connect(src,op)
+        self.tb.connect(op,dst)
+        self.tb.run()
 
-    #     # check data
-    #     result_data = dst.data()[:]
-    #     op.log(result_data, expected_result)
-    #     self.assertFloatTuplesAlmostEqual(result_data,expected_result,4)
+        # check data
+        result_data = dst.data()[:]
+        op.log(result_data, expected_result)
+        self.assertFloatTuplesAlmostEqual(result_data,expected_result,4)
 
-    # def test_window_is_hanning (self):
-    #     M=8
-    #     R=8
-    #     src_data = np.concatenate(([0],np.ones(M),np.zeros(R-1)))
-    #     op = time_compression(M,R)
-    #     # op.debug = True
-    #     expected_result = op.generate_window_coeffs()
+    def test_window_is_hanning (self):
+        M=8
+        R=8
+        src_data = np.concatenate(([0],np.ones(M),np.zeros(R-1)))
+        op = time_compression(M,R)
+        # op.debug = True
+        expected_result = op.generate_window_coeffs()
 
-    #     src = blocks.vector_source_f(src_data)
-    #     dst = blocks.vector_sink_f()
+        src = blocks.vector_source_f(src_data)
+        dst = blocks.vector_sink_f()
 
-    #     self.tb.connect(src,op)
-    #     self.tb.connect(op,dst)
-    #     self.tb.run()
+        self.tb.connect(src,op)
+        self.tb.connect(op,dst)
+        self.tb.run()
 
-    #     # check data
-    #     # Just grab the window portion of the resulting data
-    #     result_data = dst.data()[M:]
-    #     op.log(result_data,expected_result)
-    #     self.assertFloatTuplesAlmostEqual(result_data,expected_result,4)
+        # check data
+        # Just grab the window portion of the resulting data
+        result_data = dst.data()[M:]
+        op.log(result_data,expected_result)
+        self.assertFloatTuplesAlmostEqual(result_data,expected_result,4)
 
     # def test_window_overlapping (self):
     #     M=8
@@ -170,6 +166,7 @@ class qa_time_compression (gr_unittest.TestCase):
     #     result_data = dst.data()[:]
     #     op.log(result_data,expected_result)
     #     self.assertFloatTuplesAlmostEqual(result_data,expected_result,4)
+
 
 
 if __name__ == '__main__':

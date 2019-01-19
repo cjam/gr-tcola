@@ -33,7 +33,7 @@ except ImportError:
 # import any pure python here
 
 
-from time_compression import time_compression
-from overlap_add import overlap_add
+# from time_compression import time_compression
+# from overlap_add import overlap_add
 
 #
