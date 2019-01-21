@@ -56,11 +56,11 @@ namespace gr {
         throw std::out_of_range("time_compression_impl: windowSize must be divisible by hopSize");
 
       this->set_output_multiple(windowSize);
-      this->set_history(windowSize);
+      this->set_history(windowSize-hopSize+1);
 
       // Build the sqrt hanning window
       this->d_window = new std::vector<float>(windowSize, 0);
-      std::vector<float> window = gr::fft::window::build(gr::fft::window::WIN_HANN, windowSize+1, 0.0);
+      std::vector<float> window = gr::fft::window::build(gr::fft::window::WIN_RECTANGULAR, windowSize+1, 0.0);
       std::transform (window.begin(), window.end()-1, this->d_window->begin(), sqrt);
     }
 
@@ -81,16 +81,27 @@ namespace gr {
       const float *in = (const float *) input_items[0];
       float *out = (float *) output_items[0];
 
+      const unsigned M = this->window_size();
+      const unsigned R = this->hop_size();
 
-      for(int i=0; i<noutput_items/this->window_size; i++)
+      std::cout << "Num Outs: " << noutput_items << "\r\n";
+
+      unsigned outCount = 0;
+      for(int i=0; i < noutput_items/M*R; i=i+R)
       {
-
-        
-
+        const int start = i*R;        
+        for (int j=0; j<start+M; j++){
+          float num = in[start+j]*this->d_window->at(j);
+          std::cout << " start: " << start;
+          std::cout << " start+j: " << start+j;
+          std::cout << " num: " << num;
+          std::cout << " outCount: " << outCount << "\r\n";
+          out[outCount++] = num;
+        }
       }
 
       // Tell runtime system how many output items we produced.
-      return noutput_items;
+      return outCount;
     }
 
   } /* namespace tcola */

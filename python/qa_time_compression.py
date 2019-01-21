@@ -60,7 +60,7 @@ class qa_time_compression (gr_unittest.TestCase):
 
         # check data
         result_data = dst.data()[:]
-        # op.log(result_data, expected_result)
+        print result_data, expected_result
         self.assertFloatTuplesAlmostEqual(result_data,expected_result,4)
 
     # def test_m4_r1 (self):
