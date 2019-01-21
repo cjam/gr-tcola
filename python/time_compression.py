@@ -37,17 +37,17 @@ class time_compression(TcolaBase,gr.interp_block):
         )
         
         self.set_output_multiple(windowSize)
-        self.set_history(windowSize)        
+        self.set_history(windowSize-hopSize+1)        
     
-    def forecast(self,noutput_items,ninput_items_required):
-        n_required = int((noutput_items+1.0)*self.hopSize/self.windowSize)+self.history()-1
-        for i in range(len(ninput_items_required)):
-            ninput_items_required[i]= n_required
+    # def forecast(self,noutput_items,ninput_items_required):
+    #     n_required = int((noutput_items)*self.hopSize/self.windowSize)+self.history()
+    #     for i in range(len(ninput_items_required)):
+    #         ninput_items_required[i]= n_required
 
     def start(self):
         forecasted = [0]
         self.forecast(self.windowSize,forecasted)
-        self.log("Forecast",forecasted)
+        # self.log("Forecast",forecasted)
 
         return True
 
@@ -57,13 +57,19 @@ class time_compression(TcolaBase,gr.interp_block):
         M = self.windowSize
         R = self.hopSize
 
+        #self.log("input Signal",inputSignal)
         outCount = 0
-        # self.log("Input",inputSignal)
-        for index in np.arange(0,len(inputSignal)-R,R):
-            if index + M > len(inputSignal):
-                break     
-            out[outCount:outCount+M] = inputSignal[index:index+M]*self.windowCoeffs
-            outCount = outCount + M   
-        
+        input_len = len(inputSignal)        
+        for index in np.arange(0,len(out)/M*R):
+            start = index*R
+            end = start+M
+            # self.log("start",start,"end",end, inputSignal[start:end],input_len)
+            if end > input_len:
+                break
+
+            out[outCount:outCount+M] = inputSignal[start:end]*self.windowCoeffs
+            outCount = outCount + M
+
+
         return outCount
 

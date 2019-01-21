@@ -51,7 +51,7 @@ class qa_time_compression (gr_unittest.TestCase):
         
         src = blocks.vector_source_f(src_data)
         op = time_compression(M,R,'rect')
-        #op.debug = True
+        # op.debug = True
         dst = blocks.vector_sink_f()
 
         self.tb.connect(src,op)
@@ -87,11 +87,11 @@ class qa_time_compression (gr_unittest.TestCase):
         M=4
         R=2
         src_data = [1,2,3,4,5,6]
-        expected_result = (0,0,0,1,0,1,2,3,2,3,4,5)
+        expected_result = (0,0,1,2,1,2,3,4,3,4,5,6)
         
         src = blocks.vector_source_f(src_data)
         op = time_compression(M,R,'rect')
-        op.debug = True
+        # op.debug = True
         dst = blocks.vector_sink_f()
 
         self.tb.connect(src,op)
@@ -107,10 +107,11 @@ class qa_time_compression (gr_unittest.TestCase):
         M=4
         R=4
         src_data = [1,2,3,4,5,6,7,8]
-        expected_result = [0,0,0,1,2,3,4,5]
+        expected_result = [1,2,3,4,5,6,7,8]
 
         src = blocks.vector_source_f(src_data)
         op = time_compression(M,R,'rect')
+        # op.debug = True
         dst = blocks.vector_sink_f()
 
         self.tb.connect(src,op)
@@ -125,7 +126,7 @@ class qa_time_compression (gr_unittest.TestCase):
     def test_window_is_hanning (self):
         M=8
         R=8
-        src_data = np.concatenate(([0],np.ones(M),np.zeros(R-1)))
+        src_data = np.ones(M*2)
         op = time_compression(M,R)
         # op.debug = True
         expected_result = op.generate_window_coeffs()
