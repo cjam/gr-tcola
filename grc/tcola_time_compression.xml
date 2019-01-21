@@ -1,25 +1,19 @@
 <?xml version="1.0"?>
 <block>
-  <name>Time Compression</name>
+  <name>time_compression</name>
   <key>tcola_time_compression</key>
-  <category>TCOLA</category>
+  <category>tcola</category>
   <import>import tcola</import>
-  <make>tcola.time_compression($M, $R, $&taps)</make>
+  <make>tcola.time_compression($windowSize, $hopSize)</make>
   <!-- Make one 'param' node for every Parameter you want settable from the GUI.
        Sub-nodes:
        * name
        * key (makes the value accessible as $keyname, e.g. in the make node)
        * type -->
   <param>
-    <name>Window Size</name>
-    <key>M</key>
-    <type>int</type>
-  </param>
-
-  <param>
-    <name>Hop Size</name>
-    <key>R</key>
-    <type>int</type>
+    <name>...</name>
+    <key>...</key>
+    <type>...</type>
   </param>
 
   <!-- Make one 'sink' node per input. Sub-nodes:

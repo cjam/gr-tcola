@@ -23,72 +23,71 @@
 #endif
 
 #include <gnuradio/io_signature.h>
+#include <gnuradio/fft/window.h>
 #include "time_compression_impl.h"
+
+using std::vector;
 
 namespace gr {
   namespace tcola {
 
-
-    template <class IN_T, class OUT_T, class TAP_T>
-    typename time_compression<IN_T,OUT_T,TAP_T>::sptr
-    time_compression<IN_T,OUT_T,TAP_T>::make(unsigned windowSize, unsigned hopSize, const std::vector<TAP_T> &taps)
+    time_compression::sptr
+    time_compression::make(unsigned windowSize, unsigned hopSize)
     {
       return gnuradio::get_initial_sptr
-        (new time_compression_impl<IN_T,OUT_T,TAP_T>(windowSize, hopSize, taps));
+        (new time_compression_impl(windowSize, hopSize));
     }
 
     /*
      * The private constructor
      */
-    template <class IN_T, class OUT_T, class TAP_T>
-    time_compression_impl<IN_T,OUT_T,TAP_T>::time_compression_impl(unsigned windowSize, unsigned hopSize, const std::vector<TAP_T> &taps)
-      : gr::block("time_compression<IN_T,OUT_T,TAP_T>",
-              gr::io_signature::make(1, 1, sizeof(IN_T)),
-              gr::io_signature::make(1, 1, sizeof(OUT_T)))
+    time_compression_impl::time_compression_impl(unsigned windowSize, unsigned hopSize)
+      : gr::sync_interpolator("time_compression",
+              gr::io_signature::make(1, 1, sizeof(float)),
+              gr::io_signature::make(1,1, sizeof(float)), windowSize/hopSize),
+              d_window_size(windowSize),
+              d_hop_size(hopSize)
     {
-      if(windowSize == 0)
-	      throw std::out_of_range("time_compression_impl<IN_T,OUT_T,TAP_T>: windowSize must be > 0");
-      if(hopSize == 0)
-	      throw std::out_of_range("time_compression_impl<IN_T,OUT_T,TAP_T>: hopSize must be > 0");
+      if( hopSize <= 0)
+        throw std::out_of_range("time_compression_impl: hopSize must be > 0");
+      if( windowSize < hopSize)
+        throw std::out_of_range("time_compression_impl: windowSize must be > hopSize");
+      if( (float)windowSize/hopSize != floor((float)windowSize/hopSize) )
+        throw std::out_of_range("time_compression_impl: windowSize must be divisible by hopSize");
 
-      this->d_window_size=windowSize;
-      this->d_hop_size=hopSize;
-
-      this->d_history = windowSize;
-      this->set_relative_rate((uint64_t)windowSize,(uint64_t)hopSize);
       this->set_output_multiple(windowSize);
+      this->set_history(windowSize);
 
+      // Build the sqrt hanning window
+      this->d_window = new std::vector<float>(windowSize, 0);
+      std::vector<float> window = gr::fft::window::build(gr::fft::window::WIN_HANN, windowSize+1, 0.0);
+      std::transform (window.begin(), window.end()-1, this->d_window->begin(), sqrt);
     }
 
     /*
      * Our virtual destructor.
      */
-    template <class IN_T, class OUT_T, class TAP_T>
-    time_compression_impl<IN_T,OUT_T,TAP_T>::~time_compression_impl()
+    time_compression_impl::~time_compression_impl()
     {
+      delete this->d_window;
     }
 
-    template <class IN_T, class OUT_T, class TAP_T>
-    void
-    time_compression_impl<IN_T,OUT_T,TAP_T>::forecast (int noutput_items, gr_vector_int &ninput_items_required)
-    {
-      /* <+forecast+> e.g. ninput_items_required[0] = noutput_items */
-    }
-
-    template <class IN_T, class OUT_T, class TAP_T>
+    
     int
-    time_compression_impl<IN_T,OUT_T,TAP_T>::general_work (int noutput_items,
-                       gr_vector_int &ninput_items,
-                       gr_vector_const_void_star &input_items,
-                       gr_vector_void_star &output_items)
+    time_compression_impl::work(int noutput_items,
+        gr_vector_const_void_star &input_items,
+        gr_vector_void_star &output_items)
     {
-      const IN_T *in = (const IN_T *) input_items[0];
-      OUT_T *out = (OUT_T *) output_items[0];
+      const float *in = (const float *) input_items[0];
+      float *out = (float *) output_items[0];
 
-      // Do <+signal processing+>
-      // Tell runtime system how many input items we consumed on
-      // each input stream.
-      this->consume_each(noutput_items);
+
+      for(int i=0; i<noutput_items/this->window_size; i++)
+      {
+
+        
+
+      }
 
       // Tell runtime system how many output items we produced.
       return noutput_items;

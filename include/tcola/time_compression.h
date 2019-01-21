@@ -23,7 +23,7 @@
 #define INCLUDED_TCOLA_TIME_COMPRESSION_H
 
 #include <tcola/api.h>
-#include <gnuradio/block.h>
+#include <gnuradio/sync_interpolator.h>
 
 namespace gr {
   namespace tcola {
@@ -33,11 +33,10 @@ namespace gr {
      * \ingroup tcola
      *
      */
-    template<class IN_T, class OUT_T, class TAP_T>
-    class TCOLA_API time_compression : virtual public gr::block
+    class TCOLA_API time_compression : virtual public gr::sync_interpolator
     {
      public:
-      typedef boost::shared_ptr< time_compression<IN_T,OUT_T,TAP_T> > sptr;
+      typedef boost::shared_ptr<time_compression> sptr;
 
       /*!
        * \brief Return a shared_ptr to a new instance of tcola::time_compression.
@@ -47,15 +46,13 @@ namespace gr {
        * class. tcola::time_compression::make is the public interface for
        * creating new instances.
        */
-      static sptr make(unsigned windowSize, unsigned hopSize, const std::vector<TAP_T> &taps);
+      static sptr make(unsigned windowSize, unsigned hopSize);
+
       virtual unsigned window_size() const = 0;
       virtual unsigned hop_size() const = 0;
 
-      virtual void set_taps(const std::vector<TAP_T> &taps) = 0;
-      virtual std::vector<TAP_T> taps() const = 0;
+      virtual std::vector<float>* window() const = 0;
     };
-
-    typedef time_compression<float, float, float> time_compression_fff;
 
   } // namespace tcola
 } // namespace gr

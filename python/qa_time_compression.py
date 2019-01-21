@@ -21,7 +21,8 @@
 
 from gnuradio import gr, gr_unittest
 from gnuradio import blocks
-import tcola_swig as tcola
+import numpy as np
+from tcola_swig import time_compression
 
 class qa_time_compression (gr_unittest.TestCase):
 
@@ -31,20 +32,15 @@ class qa_time_compression (gr_unittest.TestCase):
     def tearDown (self):
         self.tb = None
 
-    def test_001_t (self):
-        # set up fg
-        self.tb.run ()
-        # check data
-
-    def test_invalid_parameters (self):
-        with self.assertRaises(ValueError):
-            tcola.time_compression(4,0)
+    # def test_invalid_parameters (self):
+        # with self.assertRaises(ValueError):
+        #     time_compression(4,0)
         
-        with self.assertRaises(ValueError):
-            time_compression(4,8)
+        # with self.assertRaises(ValueError):
+        #     time_compression(4,8)
         
-        with self.assertRaises(ValueError):
-            time_compression(4,3)
+        # with self.assertRaises(ValueError):
+        #     time_compression(4,3)
 
 
     def test_basic_m2_r1 (self):
@@ -54,7 +50,7 @@ class qa_time_compression (gr_unittest.TestCase):
         expected_result = (0,1,1,2,2,3,3,4)
         
         src = blocks.vector_source_f(src_data)
-        op = time_compression(M,R,'rect')
+        op = time_compression(M,R)
         #op.debug = True
         dst = blocks.vector_sink_f()
 
@@ -64,7 +60,7 @@ class qa_time_compression (gr_unittest.TestCase):
 
         # check data
         result_data = dst.data()[:]
-        op.log(result_data, expected_result)
+        # op.log(result_data, expected_result)
         self.assertFloatTuplesAlmostEqual(result_data,expected_result,4)
 
     # def test_m4_r1 (self):
@@ -170,6 +166,9 @@ class qa_time_compression (gr_unittest.TestCase):
     #     result_data = dst.data()[:]
     #     op.log(result_data,expected_result)
     #     self.assertFloatTuplesAlmostEqual(result_data,expected_result,4)
+
+
+
 
 
 if __name__ == '__main__':

@@ -25,30 +25,32 @@
 
 namespace gr {
   namespace tcola {
-    template <class IN_T, class OUT_T, class TAP_T>
-    class time_compression_impl : public time_compression<IN_T,OUT_T,TAP_T>
+
+    class time_compression_impl : public time_compression
     {
      private:
-        unsigned d_history;
-        unsigned d_window_size;
-        unsigned d_hop_size;
-        std::vector<TAP_T> d_taps;
       // Nothing to declare in this block.
+      unsigned d_history;
+      unsigned d_window_size;
+      unsigned d_hop_size;
+      std::vector<float>* d_window;
 
      public:
-      time_compression_impl(unsigned windowSize, unsigned hopSize, const std::vector<TAP_T> &taps);
+      time_compression_impl(unsigned windowSize, unsigned hopSize);
       ~time_compression_impl();
+
+      // Where all the action really happens
+      int work(int noutput_items,
+         gr_vector_const_void_star &input_items,
+         gr_vector_void_star &output_items);
 
       unsigned history() const { return d_history; }
       void set_history(unsigned history) { d_history = history; }
 
-      // Where all the action really happens
-      void forecast (int noutput_items, gr_vector_int &ninput_items_required);
+      unsigned window_size() const { return d_window_size; }
+      unsigned hop_size() const { return d_hop_size; }
 
-      int general_work(int noutput_items,
-           gr_vector_int &ninput_items,
-           gr_vector_const_void_star &input_items,
-           gr_vector_void_star &output_items);
+      std::vector<float>* window() const { return d_window; }
     };
 
   } // namespace tcola

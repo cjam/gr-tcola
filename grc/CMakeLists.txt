@@ -17,6 +17,5 @@
 # the Free Software Foundation, Inc., 51 Franklin Street,
 # Boston, MA 02110-1301, USA.
 install(FILES
-    tcola_time_compression.xml
-    tcola_overlap_add.xml DESTINATION share/gnuradio/grc/blocks
+    tcola_time_compression.xml DESTINATION share/gnuradio/grc/blocks
 )
