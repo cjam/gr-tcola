@@ -55,13 +55,13 @@ namespace gr {
       if( (float)windowSize/hopSize != floor((float)windowSize/hopSize) )
         throw std::out_of_range("time_compression_impl: windowSize must be divisible by hopSize");
 
-      this->set_output_multiple(windowSize);
-      this->set_history(windowSize-hopSize+1);
+      this->set_output_multiple(windowSize);      // Tell Scheduler to make requests for full windows
+      this->set_history(windowSize-hopSize+1);    // We need these past samples in order to calculate the new window
 
       // Build the sqrt hanning window
       this->d_window = new std::vector<float>(windowSize, 0);
       std::vector<float> window = gr::fft::window::build(gr::fft::window::WIN_RECTANGULAR, windowSize+1, 0.0);
-      std::transform (window.begin(), window.end()-1, this->d_window->begin(), sqrt);
+      std::transform (window.begin(), window.end()-1, this->window()->begin(), sqrt);
     }
 
     /*
@@ -84,18 +84,17 @@ namespace gr {
       const unsigned M = this->window_size();
       const unsigned R = this->hop_size();
 
-      std::cout << "Num Outs: " << noutput_items << "\r\n";
+      // std::cout << "Num Outs: " << noutput_items << "\r\n";
 
       unsigned outCount = 0;
-      for(int i=0; i < noutput_items/M*R; i=i+R)
-      {
-        const int start = i*R;        
-        for (int j=0; j<start+M; j++){
-          float num = in[start+j]*this->d_window->at(j);
-          std::cout << " start: " << start;
-          std::cout << " start+j: " << start+j;
-          std::cout << " num: " << num;
-          std::cout << " outCount: " << outCount << "\r\n";
+      for(int startIndex = 0; startIndex < noutput_items/M*R; startIndex = startIndex + R)
+      {     
+        for (int j=0; j<M; j++){
+          // std::cout << " start: " << startIndex;
+          // std::cout << " start+j: " << startIndex+j;
+          float num = in[startIndex+j]*this->window()->at(j);
+          // std::cout << " num: " << num;
+          // std::cout << " outCount: " << outCount << "\r\n";
           out[outCount++] = num;
         }
       }

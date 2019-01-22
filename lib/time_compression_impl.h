@@ -30,7 +30,7 @@ namespace gr {
     {
      private:
       // Nothing to declare in this block.
-      unsigned d_history;
+      // unsigned d_history;
       unsigned d_window_size;
       unsigned d_hop_size;
       std::vector<float>* d_window;
@@ -44,8 +44,8 @@ namespace gr {
          gr_vector_const_void_star &input_items,
          gr_vector_void_star &output_items);
 
-      unsigned history() const { return d_history; }
-      void set_history(unsigned history) { d_history = history; }
+      // unsigned history() const { return d_history; }
+      // void set_history(unsigned history) { d_history = history; }
 
       unsigned window_size() const { return d_window_size; }
       unsigned hop_size() const { return d_hop_size; }

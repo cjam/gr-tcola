@@ -33,14 +33,14 @@ class qa_time_compression (gr_unittest.TestCase):
         self.tb = None
 
     # def test_invalid_parameters (self):
-        # with self.assertRaises(ValueError):
-        #     time_compression(4,0)
+    #     with self.assertRaises(ValueError):
+    #         time_compression(4,0)
         
-        # with self.assertRaises(ValueError):
-        #     time_compression(4,8)
+    #     with self.assertRaises(ValueError):
+    #         time_compression(4,8)
         
-        # with self.assertRaises(ValueError):
-        #     time_compression(4,3)
+    #     with self.assertRaises(ValueError):
+    #         time_compression(4,3)
 
 
     def test_basic_m2_r1 (self):
@@ -60,67 +60,67 @@ class qa_time_compression (gr_unittest.TestCase):
 
         # check data
         result_data = dst.data()[:]
-        print result_data, expected_result
+        # print result_data, expected_result
         self.assertFloatTuplesAlmostEqual(result_data,expected_result,4)
 
-    # def test_m4_r1 (self):
-    #     M=4
-    #     R=1
-    #     src_data = [1,2,3,4]
-    #     expected_result = (0,0,0,1,0,0,1,2,0,1,2,3,1,2,3,4)
+    def test_m4_r1 (self):
+        M=4
+        R=1
+        src_data = [1,2,3,4]
+        expected_result = (0,0,0,1,0,0,1,2,0,1,2,3,1,2,3,4)
         
-    #     src = blocks.vector_source_f(src_data)
-    #     op = time_compression(M,R,'rect')
-    #     #op.debug = True
-    #     dst = blocks.vector_sink_f()
+        src = blocks.vector_source_f(src_data)
+        op = time_compression(M,R)
+        #op.debug = True
+        dst = blocks.vector_sink_f()
 
-    #     self.tb.connect(src,op)
-    #     self.tb.connect(op,dst)
-    #     self.tb.run()
+        self.tb.connect(src,op)
+        self.tb.connect(op,dst)
+        self.tb.run()
 
-    #     # check data
-    #     result_data = dst.data()[:]
-    #     op.log(result_data, expected_result)
-    #     self.assertFloatTuplesAlmostEqual(result_data,expected_result,4)
+        # check data
+        result_data = dst.data()[:]
+        # print result_data, expected_result
+        self.assertFloatTuplesAlmostEqual(result_data,expected_result,4)
 
-    # def test_basic_m4_r2 (self):
-    #     M=4
-    #     R=2
-    #     src_data = [1,2,3,4,5,6]
-    #     expected_result = (0,0,0,1,0,1,2,3,2,3,4,5)
+    def test_basic_m4_r2 (self):
+        M=4
+        R=2
+        src_data = [1,2,3,4,5,6]
+        expected_result = (0,0,1,2,1,2,3,4,3,4,5,6)
         
-    #     src = blocks.vector_source_f(src_data)
-    #     op = time_compression(M,R,'rect')
-    #     op.debug = True
-    #     dst = blocks.vector_sink_f()
+        src = blocks.vector_source_f(src_data)
+        op = time_compression(M,R)
+        print "History", op.history()
+        dst = blocks.vector_sink_f()
 
-    #     self.tb.connect(src,op)
-    #     self.tb.connect(op,dst)
-    #     self.tb.run()
+        self.tb.connect(src,op)
+        self.tb.connect(op,dst)
+        self.tb.run()
 
-    #     # check data
-    #     result_data = dst.data()[:]
-    #     op.log(result_data, expected_result)
-    #     self.assertFloatTuplesAlmostEqual(result_data,expected_result,4)
+        # check data
+        result_data = dst.data()[:]
+        # print result_data, expected_result
+        self.assertFloatTuplesAlmostEqual(result_data,expected_result,4)
 
-    # def test_basic_m4_r4 (self):
-    #     M=4
-    #     R=4
-    #     src_data = [1,2,3,4,5,6,7,8]
-    #     expected_result = [0,0,0,1,2,3,4,5]
+    def test_basic_m4_r4 (self):
+        M=4
+        R=4
+        src_data = [1,2,3,4,5,6,7,8]
+        expected_result = [1,2,3,4,5,6,7,8]
 
-    #     src = blocks.vector_source_f(src_data)
-    #     op = time_compression(M,R,'rect')
-    #     dst = blocks.vector_sink_f()
+        src = blocks.vector_source_f(src_data)
+        op = time_compression(M,R)
+        dst = blocks.vector_sink_f()
 
-    #     self.tb.connect(src,op)
-    #     self.tb.connect(op,dst)
-    #     self.tb.run()
+        self.tb.connect(src,op)
+        self.tb.connect(op,dst)
+        self.tb.run()
 
-    #     # check data
-    #     result_data = dst.data()[:]
-    #     op.log(result_data, expected_result)
-    #     self.assertFloatTuplesAlmostEqual(result_data,expected_result,4)
+        # check data
+        result_data = dst.data()[:]
+        #print result_data, expected_result
+        self.assertFloatTuplesAlmostEqual(result_data,expected_result,4)
 
     # def test_window_is_hanning (self):
     #     M=8
