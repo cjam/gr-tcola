@@ -29,14 +29,12 @@ namespace gr {
     class time_compression_impl : public time_compression
     {
      private:
-      // Nothing to declare in this block.
-      // unsigned d_history;
       unsigned d_window_size;
       unsigned d_hop_size;
-      std::vector<float>* d_window;
+      std::vector<float> d_window;
 
      public:
-      time_compression_impl(unsigned windowSize, unsigned hopSize);
+      time_compression_impl(unsigned windowSize, unsigned hopSize, const std::vector<float> &window);
       ~time_compression_impl();
 
       // Where all the action really happens
@@ -44,13 +42,10 @@ namespace gr {
          gr_vector_const_void_star &input_items,
          gr_vector_void_star &output_items);
 
-      // unsigned history() const { return d_history; }
-      // void set_history(unsigned history) { d_history = history; }
-
       unsigned window_size() const { return d_window_size; }
       unsigned hop_size() const { return d_hop_size; }
 
-      std::vector<float>* window() const { return d_window; }
+      std::vector<float> window() const { return d_window; }
     };
 
   } // namespace tcola

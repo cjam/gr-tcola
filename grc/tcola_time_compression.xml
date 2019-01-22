@@ -1,38 +1,30 @@
-<?xml version="1.0"?>
 <block>
-  <name>time_compression</name>
+  <name>Time compression</name>
   <key>tcola_time_compression</key>
-  <category>tcola</category>
-  <import>import tcola</import>
-  <make>tcola.time_compression($windowSize, $hopSize)</make>
-  <!-- Make one 'param' node for every Parameter you want settable from the GUI.
-       Sub-nodes:
-       * name
-       * key (makes the value accessible as $keyname, e.g. in the make node)
-       * type -->
+  <category>TCOLA</category>
+  <import>from tcola.tcola_swig import time_compression</import>
+  <make>time_compression($windowSize, $hopSize, $window)</make>
   <param>
-    <name>...</name>
-    <key>...</key>
-    <type>...</type>
+    <name>Window Size</name>
+    <key>windowSize</key>
+    <type>int</type>
   </param>
-
-  <!-- Make one 'sink' node per input. Sub-nodes:
-       * name (an identifier for the GUI)
-       * type
-       * vlen
-       * optional (set to 1 for optional inputs) -->
+  <param>
+    <name>Hop Size</name>
+    <key>hopSize</key>
+    <type>int</type>
+  </param>
+  <param>
+    <name>Window</name>
+    <key>window</key>
+    <type>real_vector</type>
+  </param>
   <sink>
     <name>in</name>
-    <type><!-- e.g. int, float, complex, byte, short, xxx_vector, ...--></type>
+    <type>float</type>
   </sink>
-
-  <!-- Make one 'source' node per output. Sub-nodes:
-       * name (an identifier for the GUI)
-       * type
-       * vlen
-       * optional (set to 1 for optional inputs) -->
   <source>
     <name>out</name>
-    <type><!-- e.g. int, float, complex, byte, short, xxx_vector, ...--></type>
+    <type>float</type>
   </source>
 </block>

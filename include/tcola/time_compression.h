@@ -46,12 +46,12 @@ namespace gr {
        * class. tcola::time_compression::make is the public interface for
        * creating new instances.
        */
-      static sptr make(unsigned windowSize, unsigned hopSize);
+      static sptr make(unsigned windowSize, unsigned hopSize, const std::vector<float> &window);
 
       virtual unsigned window_size() const = 0;
       virtual unsigned hop_size() const = 0;
+      virtual std::vector<float> window() const = 0;
 
-      virtual std::vector<float>* window() const = 0;
     };
 
   } // namespace tcola
