@@ -22,63 +22,50 @@
 #include "config.h"
 #endif
 
-#include "time_compression_impl.h"
 #include <gnuradio/io_signature.h>
-#include <gnuradio/fft/window.h>
-#include <volk/volk.h>
-#include <stdexcept>
+#include "overlap_add_impl.h"
 
 namespace gr {
   namespace tcola {
 
-    time_compression::sptr
-    time_compression::make(unsigned windowSize, unsigned hopSize, const std::vector<float> &window)
+    overlap_add::sptr
+    overlap_add::make(unsigned windowSize, unsigned hopSize, const std::vector<float> &window)
     {
       return gnuradio::get_initial_sptr
-        (new time_compression_impl(windowSize, hopSize, window));
+        (new overlap_add_impl(windowSize, hopSize, window));
     }
 
     /*
      * The private constructor
      */
-    time_compression_impl::time_compression_impl(unsigned windowSize, unsigned hopSize, const std::vector<float> &window)
-      : gr::sync_interpolator("time_compression",
+    overlap_add_impl::overlap_add_impl(unsigned windowSize, unsigned hopSize, const std::vector<float> &window)
+      : gr::sync_decimator("overlap_add",
               gr::io_signature::make(1, 1, sizeof(float)),
-              gr::io_signature::make(1,1, sizeof(float)), windowSize/hopSize),
+              gr::io_signature::make(1, 1, sizeof(float)), windowSize/hopSize),
               d_window_size(windowSize),
               d_hop_size(hopSize),
               d_window(window)
     {
-      // if( hopSize <= 0)
-      //   throw std::out_of_range("time_compression_impl: hopSize must be > 0");
-      // if( windowSize < hopSize)
-      //   throw std::out_of_range("time_compression_impl: windowSize must be > hopSize");
-      // if( (float)windowSize/hopSize != floor((float)windowSize/hopSize) )
-      //   throw std::out_of_range("time_compression_impl: windowSize must be divisible by hopSize");    
-
-      // If we weren't given a window, then create one
-      if(this->window().size() == 0){     
-        this->d_window.resize(windowSize);
-        // Build the sqrt hanning window      
-        std::vector<float> newWindow = gr::fft::window::build(gr::fft::window::WIN_HANN, windowSize+1, 0.0);
-        std::transform (newWindow.begin(), newWindow.end()-1, this->d_window.begin(), sqrt);
-      }
-
       // Set GNU Radio Scheduler Hints
-      this->set_output_multiple(windowSize);      // Tell Scheduler to make requests for full windows
-      this->set_history(windowSize-hopSize+1);    // We need these past samples in order to calculate the new window
+      this->set_output_multiple(hopSize);      // Tell Scheduler to make requests for full windows
+    }
+
+    bool overlap_add_impl::start(){
+      // Create the output window which we use to store state between
+      // the calls to work
+      this->d_output_window = *(new std::vector<float>(this->window_size(),0));
+      return true;
     }
 
     /*
      * Our virtual destructor.
      */
-    time_compression_impl::~time_compression_impl()
+    overlap_add_impl::~overlap_add_impl()
     {
     }
 
-    
     int
-    time_compression_impl::work(int noutput_items,
+    overlap_add_impl::work(int noutput_items,
         gr_vector_const_void_star &input_items,
         gr_vector_void_star &output_items)
     {
@@ -88,10 +75,9 @@ namespace gr {
       const unsigned M = this->window_size();
       const unsigned R = this->hop_size();
 
-      // std::cout << "Num Outs: " << noutput_items << "\r\n";
-
       unsigned outCount = 0;
-      for(int startIndex = 0; startIndex < noutput_items/M*R; startIndex = startIndex + R)
+
+      for(int startIndex = 0; startIndex < noutput_items*M/R; startIndex = startIndex + M)
       {     
         for (int j=0; j<M; j++)
         {
@@ -105,7 +91,7 @@ namespace gr {
       }
 
       // Tell runtime system how many output items we produced.
-      return outCount;
+      return noutput_items;
     }
 
   } /* namespace tcola */

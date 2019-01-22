@@ -18,29 +18,32 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef INCLUDED_TCOLA_TIME_COMPRESSION_IMPL_H
-#define INCLUDED_TCOLA_TIME_COMPRESSION_IMPL_H
+#ifndef INCLUDED_TCOLA_OVERLAP_ADD_IMPL_H
+#define INCLUDED_TCOLA_OVERLAP_ADD_IMPL_H
 
-#include <tcola/time_compression.h>
+#include <tcola/overlap_add.h>
 
 namespace gr {
   namespace tcola {
 
-    class time_compression_impl : public time_compression
+    class overlap_add_impl : public overlap_add
     {
      private:
       unsigned d_window_size;
       unsigned d_hop_size;
       std::vector<float> d_window;
+      std::vector<float> d_output_window;
 
      public:
-      time_compression_impl(unsigned windowSize, unsigned hopSize, const std::vector<float> &window);
-      ~time_compression_impl();
+      overlap_add_impl(unsigned windowSize, unsigned hopSize, const std::vector<float> &window);
+      ~overlap_add_impl();
 
       // Where all the action really happens
       int work(int noutput_items,
          gr_vector_const_void_star &input_items,
          gr_vector_void_star &output_items);
+
+      bool start();
 
       unsigned window_size() const { return d_window_size; }
       unsigned hop_size() const { return d_hop_size; }
@@ -50,5 +53,5 @@ namespace gr {
   } // namespace tcola
 } // namespace gr
 
-#endif /* INCLUDED_TCOLA_TIME_COMPRESSION_IMPL_H */
+#endif /* INCLUDED_TCOLA_OVERLAP_ADD_IMPL_H */
 
