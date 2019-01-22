@@ -34,6 +34,16 @@ case $CMD in
         cd $SCRIPT_DIR/$BUILD_DIR
         ctest --force-new-ctest-process -V
         ;;
+    install)
+        echo "Installing"
+        cd $SCRIPT_DIR/$BUILD_DIR
+        sudo make install
+        ;;
+    uninstall)
+        echo "Uninstalling"
+        cd $SCRIPT_DIR/$BUILD_DIR
+        sudo make uninstall
+        ;;
     *)
         echo "Print Help"
         ;;
