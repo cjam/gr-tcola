@@ -82,23 +82,6 @@ namespace gr {
       // and windows, then we're taking the max as our normalization gain
       float numOut = ola.work(outData.size(), inputs, outputs);
       float max = *(std::max_element( outData.data(), outData.data()+outData.size()));
-
-      // std::cout << "\r\nM = " << ola.window_size() << " R = " << ola.hop_size();
-      // std::cout << "\r\nInput \r\n";
-      // for(int i = 0; i < inputData.size(); i++){
-      //   std::cout << inputData[i] << " | ";
-      // }
-
-      // std::cout << "\r\nWindow \r\n";
-      // for(int i = 0; i < ola.window().size(); i++){
-      //   std::cout << ola.window()[i] << " | ";
-      // }
-
-      // std::cout << "\r\nOUTPUT \r\n";
-      // for(int i = 0; i < outData.size(); i++){
-      //   std::cout << outData[i] << " | ";
-      // }
-      // std::cout << "\r\n";
       
       return 1.0/max;
     }

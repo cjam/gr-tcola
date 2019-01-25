@@ -29,7 +29,8 @@ namespace gr {
   namespace tcola {
 
     /*!
-     * \brief <+description of block+>
+     * \brief The Time Compression Block is a form of interpolation to be used 
+     * in conjuction with the TCOLA Overlap and Add block
      * \ingroup tcola
      *
      */

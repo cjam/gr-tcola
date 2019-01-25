@@ -58,7 +58,6 @@ namespace gr {
     time_compression_impl::~time_compression_impl()
     {
     }
-
     
     int
     time_compression_impl::work(int noutput_items,
@@ -68,18 +67,15 @@ namespace gr {
       const float *in = (const float *) input_items[0];
       float *out = (float *) output_items[0];
 
-      // std::cout << "Num Outs: " << noutput_items << "\r\n";
-
       unsigned outCount = 0;
+
+      // Hop across the input signal in increments of hop_size
       for(int startIndex = 0; startIndex < noutput_items/this->ratio(); startIndex = startIndex + this->hop_size())
       {     
+        // Output windows of the input signal
         for (int j=0; j<this->window_size(); j++)
         {
-          // std::cout << " start: " << startIndex;
-          // std::cout << " start+j: " << startIndex+j;
           float num = in[startIndex+j]*this->window().at(j);
-          // std::cout << " num: " << num;
-          // std::cout << " outCount: " << outCount << "\r\n";
           out[outCount++] = num;
         }
       }

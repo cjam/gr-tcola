@@ -29,7 +29,8 @@ namespace gr {
   namespace tcola {
 
     /*!
-     * \brief <+description of block+>
+     * \brief Overlap and Add is a form of decimation to be used in conjunction with
+     * the TCOLA Time Compression Module
      * \ingroup tcola
      *
      */
