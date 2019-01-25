@@ -42,28 +42,11 @@ namespace gr {
      * The private constructor
      */
     time_compression_impl::time_compression_impl(unsigned windowSize, unsigned hopSize, const std::vector<float> &window)
-      : gr::sync_interpolator("time_compression",
+      : tcola_base::tcola_base(windowSize, hopSize, window),
+      gr::sync_interpolator("time_compression",
               gr::io_signature::make(1, 1, sizeof(float)),
-              gr::io_signature::make(1,1, sizeof(float)), windowSize/hopSize),
-              d_window_size(windowSize),
-              d_hop_size(hopSize),
-              d_window(window)
+              gr::io_signature::make(1,1, sizeof(float)), windowSize/hopSize)
     {
-      // if( hopSize <= 0)
-      //   throw std::out_of_range("time_compression_impl: hopSize must be > 0");
-      // if( windowSize < hopSize)
-      //   throw std::out_of_range("time_compression_impl: windowSize must be > hopSize");
-      // if( (float)windowSize/hopSize != floor((float)windowSize/hopSize) )
-      //   throw std::out_of_range("time_compression_impl: windowSize must be divisible by hopSize");    
-
-      // If we weren't given a window, then create one
-      if(this->window().size() == 0){     
-        this->d_window.resize(windowSize);
-        // Build the sqrt hanning window      
-        std::vector<float> newWindow = gr::fft::window::build(gr::fft::window::WIN_HANN, windowSize+1, 0.0);
-        std::transform (newWindow.begin(), newWindow.end()-1, this->d_window.begin(), sqrt);
-      }
-
       // Set GNU Radio Scheduler Hints
       this->set_output_multiple(windowSize);      // Tell Scheduler to make requests for full windows
       this->set_history(windowSize-hopSize+1);    // We need these past samples in order to calculate the new window
@@ -85,15 +68,12 @@ namespace gr {
       const float *in = (const float *) input_items[0];
       float *out = (float *) output_items[0];
 
-      const unsigned M = this->window_size();
-      const unsigned R = this->hop_size();
-
       // std::cout << "Num Outs: " << noutput_items << "\r\n";
 
       unsigned outCount = 0;
-      for(int startIndex = 0; startIndex < noutput_items/M*R; startIndex = startIndex + R)
+      for(int startIndex = 0; startIndex < noutput_items/this->ratio(); startIndex = startIndex + this->hop_size())
       {     
-        for (int j=0; j<M; j++)
+        for (int j=0; j<this->window_size(); j++)
         {
           // std::cout << " start: " << startIndex;
           // std::cout << " start+j: " << startIndex+j;

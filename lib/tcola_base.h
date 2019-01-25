@@ -18,33 +18,40 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef INCLUDED_TCOLA_TIME_COMPRESSION_IMPL_H
-#define INCLUDED_TCOLA_TIME_COMPRESSION_IMPL_H
+#ifndef INCLUDED_TCOLA_TCOLA_BASE_H
+#define INCLUDED_TCOLA_TCOLA_BASE_H
 
-#include <tcola/time_compression.h>
-#include "tcola_base.h"
+#include <tcola/api.h>
+#include <vector>
 
 namespace gr {
   namespace tcola {
 
-    class time_compression_impl : public time_compression, public tcola_base
+    class TCOLA_API tcola_base
     {
-     public:
-      time_compression_impl(unsigned windowSize, unsigned hopSize, const std::vector<float> &window);
-      ~time_compression_impl();
+        private:
+          unsigned d_window_size;
+          unsigned d_hop_size;
+          unsigned d_ratio;    
+        
+        protected:
+          std::vector<float> d_window;
 
-      // Where all the action really happens
-      int work(int noutput_items,
-         gr_vector_const_void_star &input_items,
-         gr_vector_void_star &output_items);
+        public:
+        static std::vector<float> create_default_window(unsigned windowSize, unsigned hopSize);
 
-      unsigned window_size() const { return tcola_base::window_size(); }
-      unsigned hop_size() const { return tcola_base::hop_size(); }
-      std::vector<float> window() const { return tcola_base::window(); }
+        tcola_base(unsigned windowSize, unsigned hopSize, const std::vector<float> &window);
+        ~tcola_base();        
+
+        virtual unsigned window_size() const { return d_window_size; }
+        virtual unsigned hop_size() const { return d_hop_size; }
+        unsigned ratio() const { return d_ratio; }
+        virtual std::vector<float> window() const { return d_window; }
+        
     };
 
   } // namespace tcola
 } // namespace gr
 
-#endif /* INCLUDED_TCOLA_TIME_COMPRESSION_IMPL_H */
+#endif /* INCLUDED_TCOLA_TCOLA_BASE_H */
 

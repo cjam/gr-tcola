@@ -23,5 +23,6 @@
 install(FILES
     api.h
     time_compression.h
-    overlap_add.h DESTINATION include/tcola
+    overlap_add.h 
+    DESTINATION include/tcola
 )

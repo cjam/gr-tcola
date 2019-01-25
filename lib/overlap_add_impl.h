@@ -21,18 +21,18 @@
 #ifndef INCLUDED_TCOLA_OVERLAP_ADD_IMPL_H
 #define INCLUDED_TCOLA_OVERLAP_ADD_IMPL_H
 
+#include "tcola_base.h"
 #include <tcola/overlap_add.h>
 
 namespace gr {
   namespace tcola {
 
-    class overlap_add_impl : public overlap_add
+    class overlap_add_impl : public overlap_add, public tcola_base
     {
      private:
-      unsigned d_window_size;
-      unsigned d_hop_size;
-      std::vector<float> d_window;
       std::vector<float> d_output_window;
+      float d_normalization_gain;
+      float calculate_normalization_gain();
 
      public:
       overlap_add_impl(unsigned windowSize, unsigned hopSize, const std::vector<float> &window);
@@ -45,9 +45,9 @@ namespace gr {
 
       bool start();
 
-      unsigned window_size() const { return d_window_size; }
-      unsigned hop_size() const { return d_hop_size; }
-      std::vector<float> window() const { return d_window; }
+      unsigned window_size() const { return tcola_base::window_size(); }
+      unsigned hop_size() const { return tcola_base::hop_size(); }
+      std::vector<float> window() const { return tcola_base::window(); }
     };
 
   } // namespace tcola

@@ -24,6 +24,7 @@
 
 #include <gnuradio/io_signature.h>
 #include "overlap_add_impl.h"
+#include <algorithm>
 
 namespace gr {
   namespace tcola {
@@ -39,22 +40,67 @@ namespace gr {
      * The private constructor
      */
     overlap_add_impl::overlap_add_impl(unsigned windowSize, unsigned hopSize, const std::vector<float> &window)
-      : gr::sync_decimator("overlap_add",
+      : tcola_base(windowSize,hopSize,window),
+        gr::sync_decimator("overlap_add",
               gr::io_signature::make(1, 1, sizeof(float)),
               gr::io_signature::make(1, 1, sizeof(float)), windowSize/hopSize),
-              d_window_size(windowSize),
-              d_hop_size(hopSize),
-              d_window(window)
+        d_normalization_gain(1.0)        
     {
+      this->d_output_window.resize(this->window_size());
       // Set GNU Radio Scheduler Hints
       this->set_output_multiple(hopSize);      // Tell Scheduler to make requests for full windows
     }
 
     bool overlap_add_impl::start(){
-      // Create the output window which we use to store state between
-      // the calls to work
-      this->d_output_window = *(new std::vector<float>(this->window_size(),0));
+      this->d_output_window.resize(this->window_size());
+      std::fill(this->d_output_window.begin(),this->d_output_window.end(),0);
+      
+      // Calculate the normalization gain 
+      this->d_normalization_gain = this->calculate_normalization_gain();
+
       return true;
+    }
+
+    float overlap_add_impl::calculate_normalization_gain(){
+      overlap_add_impl ola(tcola_base::window_size(), tcola_base::hop_size(), tcola_base::window());
+      ola.d_normalization_gain = 1.0;
+
+      // Allocate a vector full of windows
+      std::vector<float> inputData(ola.ratio()*ola.window_size());
+      for(int i=0; i< ola.ratio(); i++){
+        for(int j=0; j<ola.window().size(); j++){
+            inputData[i*ola.window().size()+j] = ola.window()[j];
+        }        
+      }
+      std::vector<const void*> inputs(1,inputData.data());      
+      
+      // Allocate output buffer
+      std::vector<float> outData(ola.ratio()*ola.hop_size());
+      std::vector<void*> outputs(1,outData.data());
+     
+      // Here we are using a temporary overlap and add block to overlap
+      // and windows, then we're taking the max as our normalization gain
+      float numOut = ola.work(outData.size(), inputs, outputs);
+      float max = *(std::max_element( outData.data(), outData.data()+outData.size()));
+
+      // std::cout << "\r\nM = " << ola.window_size() << " R = " << ola.hop_size();
+      // std::cout << "\r\nInput \r\n";
+      // for(int i = 0; i < inputData.size(); i++){
+      //   std::cout << inputData[i] << " | ";
+      // }
+
+      // std::cout << "\r\nWindow \r\n";
+      // for(int i = 0; i < ola.window().size(); i++){
+      //   std::cout << ola.window()[i] << " | ";
+      // }
+
+      // std::cout << "\r\nOUTPUT \r\n";
+      // for(int i = 0; i < outData.size(); i++){
+      //   std::cout << outData[i] << " | ";
+      // }
+      // std::cout << "\r\n";
+      
+      return 1.0/max;
     }
 
     /*
@@ -72,22 +118,30 @@ namespace gr {
       const float *in = (const float *) input_items[0];
       float *out = (float *) output_items[0];
 
-      const unsigned M = this->window_size();
-      const unsigned R = this->hop_size();
-
+      
       unsigned outCount = 0;
-
-      for(int startIndex = 0; startIndex < noutput_items*M/R; startIndex = startIndex + M)
+      for(int startIndex = 0; startIndex < noutput_items*this->ratio(); startIndex = startIndex + this->window_size())
       {     
-        for (int j=0; j<M; j++)
-        {
-          // std::cout << " start: " << startIndex;
-          // std::cout << " start+j: " << startIndex+j;
-          float num = in[startIndex+j]*this->window().at(j);
-          // std::cout << " num: " << num;
-          // std::cout << " outCount: " << outCount << "\r\n";
-          out[outCount++] = num;
+        for (int j=0; j<this->window_size(); j++)
+        {         
+          // Overlap and add using our internal output window
+          this->d_output_window[j] += in[startIndex+j]*this->window()[j];
+       
+          // For every window we output a hop_size of samples
+          if(j < this->hop_size()){
+            out[outCount++] = this->d_output_window[j]*this->d_normalization_gain;
+          }
         }
+
+        // Once we've output our hop size of samples, we need to rotate the
+        // output window by hop_size and then set the last hop_size samples
+        // to zero
+        std::rotate(
+          this->d_output_window.begin(),
+          this->d_output_window.begin()+this->hop_size(),
+          this->d_output_window.end()
+        );
+        std::fill(this->d_output_window.end()-this->hop_size(),this->d_output_window.end(),0);
       }
 
       // Tell runtime system how many output items we produced.
