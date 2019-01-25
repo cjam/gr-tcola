@@ -32,7 +32,7 @@ case $CMD in
         cd $SCRIPT_DIR
         mkdir -p $BUILD_DIR
         cd $SCRIPT_DIR/$BUILD_DIR
-        ctest --force-new-ctest-process -V
+        ctest --force-new-ctest-process -V $2 $3
         ;;
     install)
         echo "Installing"
