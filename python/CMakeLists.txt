@@ -31,9 +31,7 @@ endif()
 GR_PYTHON_INSTALL(
     FILES
     __init__.py
-    time_compression.py
-    overlap_add.py 
-    TcolaBase.py DESTINATION ${GR_PYTHON_DIR}/tcola
+    DESTINATION ${GR_PYTHON_DIR}/tcola
 )
 
 ########################################################################
@@ -43,5 +41,7 @@ include(GrTest)
 
 set(GR_TEST_TARGET_DEPS gnuradio-tcola)
 set(GR_TEST_PYTHON_DIRS ${CMAKE_BINARY_DIR}/swig)
+# GR_ADD_TEST(qa_time_compression ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_time_compression.py)
+# GR_ADD_TEST(qa_overlap_add ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_overlap_add.py)
 GR_ADD_TEST(qa_time_compression ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_time_compression.py)
 GR_ADD_TEST(qa_overlap_add ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_overlap_add.py)

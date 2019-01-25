@@ -19,10 +19,10 @@
 # Boston, MA 02110-1301, USA.
 # 
 
-import numpy as np
 from gnuradio import gr, gr_unittest
 from gnuradio import blocks
-from time_compression import time_compression 
+import numpy as np
+from tcola_swig import time_compression
 
 class qa_time_compression (gr_unittest.TestCase):
 
@@ -32,130 +32,26 @@ class qa_time_compression (gr_unittest.TestCase):
     def tearDown (self):
         self.tb = None
 
-    def test_invalid_parameters (self):
-        with self.assertRaises(ValueError):
-            time_compression(4,0)
+    # def test_invalid_parameters (self):
+    #     with self.assertRaises(ValueError):
+    #         time_compression(4,0)
         
-        with self.assertRaises(ValueError):
-            time_compression(4,8)
+    #     with self.assertRaises(ValueError):
+    #         time_compression(4,8)
         
-        with self.assertRaises(ValueError):
-            time_compression(4,3)
+    #     with self.assertRaises(ValueError):
+    #         time_compression(4,3)
 
 
-    def test_basic_m2_r1 (self):
-        M=2
-        R=1
-        src_data = [1,2,3,4]
-        expected_result = (0,1,1,2,2,3,3,4)
-        
-        src = blocks.vector_source_f(src_data)
-        op = time_compression(M,R,'rect')
-        #op.debug = True
-        dst = blocks.vector_sink_f()
-
-        self.tb.connect(src,op)
-        self.tb.connect(op,dst)
-        self.tb.run()
-
-        # check data
-        result_data = dst.data()[:]
-        op.log(result_data, expected_result)
-        self.assertFloatTuplesAlmostEqual(result_data,expected_result,4)
-
-    def test_m4_r1 (self):
-        M=4
-        R=1
-        src_data = [1,2,3,4]
-        expected_result = (0,0,0,1,0,0,1,2,0,1,2,3,1,2,3,4)
-        
-        src = blocks.vector_source_f(src_data)
-        op = time_compression(M,R,'rect')
-        #op.debug = True
-        dst = blocks.vector_sink_f()
-
-        self.tb.connect(src,op)
-        self.tb.connect(op,dst)
-        self.tb.run()
-
-        # check data
-        result_data = dst.data()[:]
-        op.log(result_data, expected_result)
-        self.assertFloatTuplesAlmostEqual(result_data,expected_result,4)
-
-    def test_basic_m4_r2 (self):
-        M=4
-        R=2
-        src_data = [1,2,3,4,5,6]
-        expected_result = (0,0,0,1,0,1,2,3,2,3,4,5)
-        
-        src = blocks.vector_source_f(src_data)
-        op = time_compression(M,R,'rect')
-        op.debug = True
-        dst = blocks.vector_sink_f()
-
-        self.tb.connect(src,op)
-        self.tb.connect(op,dst)
-        self.tb.run()
-
-        # check data
-        result_data = dst.data()[:]
-        op.log(result_data, expected_result)
-        self.assertFloatTuplesAlmostEqual(result_data,expected_result,4)
-
-    def test_basic_m4_r4 (self):
-        M=4
-        R=4
-        src_data = [1,2,3,4,5,6,7,8]
-        expected_result = [0,0,0,1,2,3,4,5]
-
-        src = blocks.vector_source_f(src_data)
-        op = time_compression(M,R,'rect')
-        dst = blocks.vector_sink_f()
-
-        self.tb.connect(src,op)
-        self.tb.connect(op,dst)
-        self.tb.run()
-
-        # check data
-        result_data = dst.data()[:]
-        op.log(result_data, expected_result)
-        self.assertFloatTuplesAlmostEqual(result_data,expected_result,4)
-
-    def test_window_is_hanning (self):
-        M=8
-        R=8
-        src_data = np.concatenate(([0],np.ones(M),np.zeros(R-1)))
-        op = time_compression(M,R)
-        # op.debug = True
-        expected_result = op.generate_window_coeffs()
-
-        src = blocks.vector_source_f(src_data)
-        dst = blocks.vector_sink_f()
-
-        self.tb.connect(src,op)
-        self.tb.connect(op,dst)
-        self.tb.run()
-
-        # check data
-        # Just grab the window portion of the resulting data
-        result_data = dst.data()[M:]
-        op.log(result_data,expected_result)
-        self.assertFloatTuplesAlmostEqual(result_data,expected_result,4)
-
-    # def test_window_overlapping (self):
-    #     M=8
-    #     R=M/2
-    #     src_data = np.concatenate(([0],np.ones(M),np.zeros(R-1)))
-    #     op = time_compression(M,R)
-    #     op.debug = True
-    #     window = op.generate_window_coeffs()
-    #     expected_result = np.concatenate((
-    #         np.concatenate((np.zeros(R),src_data[:R]))*window,
-    #         src_data*window
-    #     ))
+    # def test_basic_m2_r1 (self):
+    #     M=2
+    #     R=1
+    #     src_data = [1,2,3,4]
+    #     expected_result = (0,1,1,2,2,3,3,4)
         
     #     src = blocks.vector_source_f(src_data)
+    #     op = time_compression(M,R,np.ones(M))
+    #     #op.debug = True
     #     dst = blocks.vector_sink_f()
 
     #     self.tb.connect(src,op)
@@ -164,8 +60,111 @@ class qa_time_compression (gr_unittest.TestCase):
 
     #     # check data
     #     result_data = dst.data()[:]
-    #     op.log(result_data,expected_result)
+    #     # print result_data, expected_result
     #     self.assertFloatTuplesAlmostEqual(result_data,expected_result,4)
+
+    # def test_m4_r1 (self):
+    #     M=4
+    #     R=1
+    #     src_data = [1,2,3,4]
+    #     expected_result = (0,0,0,1,0,0,1,2,0,1,2,3,1,2,3,4)
+        
+    #     src = blocks.vector_source_f(src_data)
+    #     op = time_compression(M,R,np.ones(M))
+    #     #op.debug = True
+    #     dst = blocks.vector_sink_f()
+
+    #     self.tb.connect(src,op)
+    #     self.tb.connect(op,dst)
+    #     self.tb.run()
+
+    #     # check data
+    #     result_data = dst.data()[:]
+    #     # print result_data, expected_result
+    #     self.assertFloatTuplesAlmostEqual(result_data,expected_result,4)
+
+    # def test_basic_m4_r2 (self):
+    #     M=4
+    #     R=2
+    #     src_data = [1,2,3,4,5,6]
+    #     expected_result = (0,0,1,2,1,2,3,4,3,4,5,6)
+        
+    #     src = blocks.vector_source_f(src_data)
+    #     op = time_compression(M,R,np.ones(M))
+    #     dst = blocks.vector_sink_f()
+
+    #     self.tb.connect(src,op)
+    #     self.tb.connect(op,dst)
+    #     self.tb.run()
+
+    #     # check data
+    #     result_data = dst.data()[:]
+    #     # print result_data, expected_result
+    #     self.assertFloatTuplesAlmostEqual(result_data,expected_result,4)
+
+    # def test_basic_m4_r4 (self):
+    #     M=4
+    #     R=4
+    #     src_data = [1,2,3,4,5,6,7,8]
+    #     expected_result = [1,2,3,4,5,6,7,8]
+
+    #     src = blocks.vector_source_f(src_data)
+    #     op = time_compression(M,R,np.ones(M))
+    #     dst = blocks.vector_sink_f()
+
+    #     self.tb.connect(src,op)
+    #     self.tb.connect(op,dst)
+    #     self.tb.run()
+
+    #     # check data
+    #     result_data = dst.data()[:]
+    #     #print result_data, expected_result
+    #     self.assertFloatTuplesAlmostEqual(result_data,expected_result,4)
+
+    # def test_window_is_hanning (self):
+    #     M=8
+    #     R=8
+    #     src_data = np.concatenate((np.ones(M),np.zeros(R)))
+    #     op = time_compression(M,R,[])
+    #     expected_result = op.window()
+
+    #     src = blocks.vector_source_f(src_data)
+    #     dst = blocks.vector_sink_f()
+
+    #     self.tb.connect(src,op)
+    #     self.tb.connect(op,dst)
+    #     self.tb.run()
+
+    #     # check data
+    #     # Just grab the window portion of the resulting data
+    #     result_data = dst.data()[0:M]
+    #    # print result_data,expected_result
+    #     self.assertFloatTuplesAlmostEqual(result_data,expected_result,4)
+
+    def test_window_overlapping (self):
+        M=8
+        R=M/2
+        src_data = np.ones(M)
+        op = time_compression(M,R,[])
+        window = op.window()
+        expected_result = np.concatenate((
+            np.concatenate((np.zeros(R),src_data[:R]))*window,
+            src_data*window
+        ))
+        
+        src = blocks.vector_source_f(src_data)
+        dst = blocks.vector_sink_f()
+
+        self.tb.connect(src,op)
+        self.tb.connect(op,dst)
+        self.tb.run()
+
+        # check data
+        result_data = dst.data()[:]
+        # print result_data,expected_result
+        self.assertFloatTuplesAlmostEqual(result_data,expected_result,4)
+
+
 
 
 

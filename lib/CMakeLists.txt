@@ -24,9 +24,10 @@ include(GrPlatform) #define LIB_SUFFIX
 
 include_directories(${Boost_INCLUDE_DIR})
 link_directories(${Boost_LIBRARY_DIRS})
-
 list(APPEND tcola_sources
-)
+    tcola_base.cc
+    time_compression_impl.cc
+    overlap_add_impl.cc )
 
 set(tcola_sources "${tcola_sources}" PARENT_SCOPE)
 if(NOT tcola_sources)
