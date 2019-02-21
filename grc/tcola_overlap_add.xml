@@ -3,7 +3,24 @@
   <key>tcola_overlap_add</key>
   <category>TCOLA</category>
   <import>import tcola</import>
-  <make>tcola.overlap_add($windowSize, $hopSize, $window)</make>
+  <make>tcola.overlap_add_$type($windowSize, $hopSize, $window)</make>
+
+  <param>
+    <name>Type</name>
+    <key>type</key>
+    <value>f</value>
+    <type>enum</type>
+    <option>
+        <name>Float</name>
+        <key>f</key>
+        <opt>stream:float</opt>
+    </option>
+    <option>
+        <name>Complex</name>
+        <key>c</key>
+        <opt>stream:complex</opt>
+    </option>
+  </param>
   <param>
     <name>Window Size</name>
     <key>windowSize</key>
@@ -21,10 +38,10 @@
   </param>
   <sink>
     <name>in</name>
-    <type>float</type>
+    <type>$type.stream</type>
   </sink>
   <source>
     <name>out</name>
-    <type>float</type>
+    <type>$type.stream</type>
   </source>
 </block>

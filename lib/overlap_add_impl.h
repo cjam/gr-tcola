@@ -26,11 +26,11 @@
 
 namespace gr {
   namespace tcola {
-
-    class overlap_add_impl : public overlap_add, public tcola_base
+    template <class T>
+    class overlap_add_impl : public overlap_add<T>, public tcola_base
     {
      private:
-      std::vector<float> d_output_window;
+      std::vector<T> d_output_window;
       float d_normalization_gain;
       float calculate_normalization_gain();
 
@@ -48,6 +48,8 @@ namespace gr {
       unsigned window_size() const { return tcola_base::window_size(); }
       unsigned hop_size() const { return tcola_base::hop_size(); }
       std::vector<float> window() const { return tcola_base::window(); }
+      float normalization_gain() const { return d_normalization_gain; }
+      void set_normalization_gain(float gain) { d_normalization_gain = gain; }
     };
 
   } // namespace tcola

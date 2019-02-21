@@ -34,10 +34,11 @@ namespace gr {
      * \ingroup tcola
      *
      */
+    template<class T>
     class TCOLA_API overlap_add : virtual public gr::sync_decimator
     {
      public:
-      typedef boost::shared_ptr<overlap_add> sptr;
+      typedef boost::shared_ptr< overlap_add<T> > sptr;
 
       /*!
        * \brief Return a shared_ptr to a new instance of tcola::overlap_add.
@@ -53,6 +54,8 @@ namespace gr {
       virtual unsigned hop_size() const = 0;
       virtual std::vector<float> window() const = 0;
     };
+    typedef overlap_add<float> overlap_add_f;
+    typedef overlap_add<gr_complex> overlap_add_c;
 
   } // namespace tcola
 } // namespace gr

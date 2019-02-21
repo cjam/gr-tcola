@@ -28,22 +28,24 @@
 
 namespace gr {
   namespace tcola {
-
-    overlap_add::sptr
-    overlap_add::make(unsigned windowSize, unsigned hopSize, const std::vector<float> &window)
+    
+    template<class T>
+    typename overlap_add<T>::sptr
+    overlap_add<T>::make(unsigned windowSize, unsigned hopSize, const std::vector<float> &window)
     {
       return gnuradio::get_initial_sptr
-        (new overlap_add_impl(windowSize, hopSize, window));
+        (new overlap_add_impl<T>(windowSize, hopSize, window));
     }
 
     /*
      * The private constructor
      */
-    overlap_add_impl::overlap_add_impl(unsigned windowSize, unsigned hopSize, const std::vector<float> &window)
+    template<class T>
+    overlap_add_impl<T>::overlap_add_impl(unsigned windowSize, unsigned hopSize, const std::vector<float> &window)
       : tcola_base(windowSize, hopSize, window),
         gr::sync_decimator("overlap_add",
-              gr::io_signature::make(1, 1, sizeof(float)),
-              gr::io_signature::make(1, 1, sizeof(float)), windowSize/hopSize),
+              gr::io_signature::make(1, 1, sizeof(T)),
+              gr::io_signature::make(1, 1, sizeof(T)), windowSize/hopSize),
         d_normalization_gain(1.0)        
     {
       this->d_output_window.resize(this->window_size());
@@ -52,7 +54,8 @@ namespace gr {
       this->set_output_multiple(hopSize);      // Tell Scheduler to make requests for full windows
     }
 
-    bool overlap_add_impl::start(){
+    template<class T>
+    bool overlap_add_impl<T>::start(){
       this->d_output_window.resize(this->window_size());
       std::fill(this->d_output_window.begin(),this->d_output_window.end(),0);
       
@@ -62,9 +65,10 @@ namespace gr {
       return true;
     }
 
-    float overlap_add_impl::calculate_normalization_gain(){
-      overlap_add_impl ola(tcola_base::window_size(), tcola_base::hop_size(), tcola_base::window());
-      ola.d_normalization_gain = 1.0;
+    template<class T>
+    float overlap_add_impl<T>::calculate_normalization_gain(){
+      overlap_add_impl<float> ola(tcola_base::window_size(), tcola_base::hop_size(), tcola_base::window());
+      ola.set_normalization_gain(1.0);
 
       // Allocate a vector full of windows
       std::vector<float> inputData(ola.ratio()*ola.window_size());
@@ -90,17 +94,19 @@ namespace gr {
     /*
      * Our virtual destructor.
      */
-    overlap_add_impl::~overlap_add_impl()
+    template<class T>
+    overlap_add_impl<T>::~overlap_add_impl()
     {
     }
 
+    template<class T>
     int
-    overlap_add_impl::work(int noutput_items,
+    overlap_add_impl<T>::work(int noutput_items,
         gr_vector_const_void_star &input_items,
         gr_vector_void_star &output_items)
     {
-      const float *in = (const float *) input_items[0];
-      float *out = (float *) output_items[0];
+      const T *in = (const T *) input_items[0];
+      T *out = (T *) output_items[0];
 
       
       unsigned outCount = 0;
@@ -132,6 +138,8 @@ namespace gr {
       return noutput_items;
     }
 
+    template class overlap_add<gr_complex>;
+    template class overlap_add<float>;
   } /* namespace tcola */
 } /* namespace gr */
 
