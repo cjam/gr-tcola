@@ -30,21 +30,23 @@
 namespace gr {
   namespace tcola {
 
-    time_compression::sptr
-    time_compression::make(unsigned windowSize, unsigned hopSize, const std::vector<float> &window)
+    template <class T>
+    typename time_compression<T>::sptr
+    time_compression<T>::make(unsigned windowSize, unsigned hopSize, const std::vector<float> &window)
     {
       return gnuradio::get_initial_sptr
-        (new time_compression_impl(windowSize, hopSize, window));
+        (new time_compression_impl<T>(windowSize, hopSize, window));
     }
 
     /*
      * The private constructor
      */
-    time_compression_impl::time_compression_impl(unsigned windowSize, unsigned hopSize, const std::vector<float> &window)
+    template <class T>
+    time_compression_impl<T>::time_compression_impl(unsigned windowSize, unsigned hopSize, const std::vector<float> &window)
       : tcola_base::tcola_base(windowSize, hopSize, window),
       gr::sync_interpolator("time_compression",
-              gr::io_signature::make(1, 1, sizeof(float)),
-              gr::io_signature::make(1,1, sizeof(float)), windowSize/hopSize)
+              gr::io_signature::make(1, 1, sizeof(T)),
+              gr::io_signature::make(1,1, sizeof(T)), windowSize/hopSize)
     {
       // Set GNU Radio Scheduler Hints
       this->set_output_multiple(windowSize);      // Tell Scheduler to make requests for full windows
@@ -54,12 +56,13 @@ namespace gr {
     /*
      * Our virtual destructor.
      */
-    time_compression_impl::~time_compression_impl()
+    template <class T>    
+    time_compression_impl<T>::~time_compression_impl()
     {
     }
     
-    int
-    time_compression_impl::work(int noutput_items,
+    template <class T>
+    int time_compression_impl<T>::work(int noutput_items,
         gr_vector_const_void_star &input_items,
         gr_vector_void_star &output_items)
     {
@@ -82,6 +85,9 @@ namespace gr {
       // Tell runtime system how many output items we produced.
       return outCount;
     }
+
+    template class time_compression<gr_complex>;
+    template class time_compression<float>;
 
   } /* namespace tcola */
 } /* namespace gr */

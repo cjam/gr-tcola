@@ -3,7 +3,7 @@
   <key>tcola_overlap_add</key>
   <category>TCOLA</category>
   <import>import tcola</import>
-  <make>tcola.overlap_add_$type($windowSize, $hopSize, $window)</make>
+  <make>tcola.overlap_add_${type}($windowSize, $hopSize, $window)</make>
 
   <param>
     <name>Type</name>

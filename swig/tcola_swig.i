@@ -28,8 +28,8 @@ BASE_NAME = BASE_NAME.make
 %include "tcola/time_compression.h"
 %include "tcola/overlap_add.h"
 
-
-GR_SWIG_BLOCK_MAGIC2(tcola, time_compression);
+TCOLA_SWIG_BLOCK_TMPL(tcola, time_compression_f, time_compression<float>);
+TCOLA_SWIG_BLOCK_TMPL(tcola, time_compression_c, time_compression<gr_complex>);
 TCOLA_SWIG_BLOCK_TMPL(tcola, overlap_add_f, overlap_add<float>);
 TCOLA_SWIG_BLOCK_TMPL(tcola, overlap_add_c, overlap_add<gr_complex>);
 
