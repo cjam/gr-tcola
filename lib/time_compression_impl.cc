@@ -26,7 +26,6 @@
 #include <gnuradio/io_signature.h>
 #include <gnuradio/fft/window.h>
 #include <volk/volk.h>
-#include <stdexcept>
 
 namespace gr {
   namespace tcola {

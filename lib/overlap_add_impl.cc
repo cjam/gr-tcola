@@ -40,13 +40,14 @@ namespace gr {
      * The private constructor
      */
     overlap_add_impl::overlap_add_impl(unsigned windowSize, unsigned hopSize, const std::vector<float> &window)
-      : tcola_base(windowSize,hopSize,window),
+      : tcola_base(windowSize, hopSize, window),
         gr::sync_decimator("overlap_add",
               gr::io_signature::make(1, 1, sizeof(float)),
               gr::io_signature::make(1, 1, sizeof(float)), windowSize/hopSize),
         d_normalization_gain(1.0)        
     {
       this->d_output_window.resize(this->window_size());
+      
       // Set GNU Radio Scheduler Hints
       this->set_output_multiple(hopSize);      // Tell Scheduler to make requests for full windows
     }

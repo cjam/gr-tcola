@@ -25,6 +25,7 @@
 #include "tcola_base.h"
 #include <gnuradio/fft/window.h>
 #include <algorithm>
+#include <stdexcept>
 
 namespace gr {
   namespace tcola {
