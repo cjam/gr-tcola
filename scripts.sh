@@ -45,6 +45,14 @@ case $CMD in
         sudo make uninstall
         ;;
     *)
-        echo "Print Help"
+        echo "
+        Available Commands
+        ------------------
+        build
+        rebuild
+        test
+        install
+        uninstall
+        "
         ;;
 esac
