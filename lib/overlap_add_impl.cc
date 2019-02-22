@@ -88,7 +88,12 @@ namespace gr {
       float numOut = ola.work(outData.size(), inputs, outputs);
       float max = *(std::max_element( outData.data(), outData.data()+outData.size()));
       
-      return 1.0/max;
+      // We need to scale differently if we're using complex numbers
+      if(sizeof(T)==sizeof(gr_complex)){
+        return 2.0/sqrt(pow(max,2.0));
+      }else{
+        return 1.0/max;
+      }
     }
 
     /*
