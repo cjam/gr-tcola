@@ -21,8 +21,8 @@
 
 from gnuradio import gr, gr_unittest
 from gnuradio import blocks
+from tcola_swig import overlap_add_f
 import numpy as np
-from tcola_swig import overlap_add
 
 class qa_overlap_add (gr_unittest.TestCase):
 
@@ -34,13 +34,13 @@ class qa_overlap_add (gr_unittest.TestCase):
 
     # def test_invalid_parameters (self):
     #     with self.assertRaises(ValueError):
-    #         overlap_add(4,0,())
+    #         overlap_add_f(4,0,())
         
     #     with self.assertRaises(ValueError):
-    #         overlap_add(4,8,())
+    #         overlap_add_f(4,8,())
         
     #     with self.assertRaises(ValueError):
-    #         overlap_add(4,3,())
+    #         overlap_add_f(4,3,())
     
     # def test_basic_m2_r1 (self):
     #     M=2
@@ -49,7 +49,7 @@ class qa_overlap_add (gr_unittest.TestCase):
     #     expected_result = [0,1,2,3]
         
     #     src = blocks.vector_source_f(src_data)
-    #     op = overlap_add(M,R,np.ones(M))
+    #     op = overlap_add_f(M,R,np.ones(M))
     #     #op.debug = True
     #     # op.log("forecasted")
     #     dst = blocks.vector_sink_f()
@@ -70,7 +70,7 @@ class qa_overlap_add (gr_unittest.TestCase):
     #     expected_result = (0,0,0,1,2,3,4,5,6)
         
     #     src = blocks.vector_source_f(src_data)
-    #     op = overlap_add(M,R,np.ones(M))
+    #     op = overlap_add_f(M,R,np.ones(M))
     #     #op.debug = True
     #     dst = blocks.vector_sink_f()
 
@@ -90,7 +90,7 @@ class qa_overlap_add (gr_unittest.TestCase):
     #     expected_result = (0,0,0,1,2,3,4,5,)
         
     #     src = blocks.vector_source_f(src_data)
-    #     op = overlap_add(M,R,np.ones(M))
+    #     op = overlap_add_f(M,R,np.ones(M))
 
     #     dst = blocks.vector_sink_f()
 
@@ -106,7 +106,7 @@ class qa_overlap_add (gr_unittest.TestCase):
     def test_window_overlapping (self):
         M = 8
         R = M/2
-        op = overlap_add(M,R,())
+        op = overlap_add_f(M,R,())
         window = op.window()
         src_data = np.concatenate((
             np.concatenate((np.zeros(R),np.ones(R)))*window,

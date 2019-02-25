@@ -26,8 +26,8 @@
 
 namespace gr {
   namespace tcola {
-
-    class time_compression_impl : public time_compression, public tcola_base
+    template<class T>
+    class time_compression_impl : public time_compression<T>, public tcola_base
     {
      public:
       time_compression_impl(unsigned windowSize, unsigned hopSize, const std::vector<float> &window);

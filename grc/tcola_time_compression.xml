@@ -2,8 +2,24 @@
   <name>Time compression</name>
   <key>tcola_time_compression</key>
   <category>TCOLA</category>
-  <import>from tcola.tcola_swig import time_compression</import>
-  <make>time_compression($windowSize, $hopSize, $window)</make>
+  <import>import tcola</import>
+  <make>tcola.time_compression_${type}($windowSize, $hopSize, $window)</make>
+  <param>
+    <name>Type</name>
+    <key>type</key>
+    <value>f</value>
+    <type>enum</type>
+    <option>
+        <name>Float</name>
+        <key>f</key>
+        <opt>stream:float</opt>
+    </option>
+    <option>
+        <name>Complex</name>
+        <key>c</key>
+        <opt>stream:complex</opt>
+    </option>
+  </param>
   <param>
     <name>Window Size</name>
     <key>windowSize</key>
@@ -21,10 +37,10 @@
   </param>
   <sink>
     <name>in</name>
-    <type>float</type>
+    <type>$type.stream</type>
   </sink>
   <source>
     <name>out</name>
-    <type>float</type>
+    <type>$type.stream</type>
   </source>
 </block>

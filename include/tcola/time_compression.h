@@ -34,10 +34,11 @@ namespace gr {
      * \ingroup tcola
      *
      */
+    template<class T>
     class TCOLA_API time_compression : virtual public gr::sync_interpolator
     {
      public:
-      typedef boost::shared_ptr<time_compression> sptr;
+      typedef boost::shared_ptr<time_compression<T> > sptr;
 
       /*!
        * \brief Return a shared_ptr to a new instance of tcola::time_compression.
@@ -52,8 +53,9 @@ namespace gr {
       virtual unsigned window_size() const = 0;
       virtual unsigned hop_size() const = 0;
       virtual std::vector<float> window() const = 0;
-
     };
+    typedef time_compression<float> time_compression_f;
+    typedef time_compression<gr_complex> time_compression_c;
 
   } // namespace tcola
 } // namespace gr

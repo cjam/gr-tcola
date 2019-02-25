@@ -25,6 +25,7 @@
 #include "tcola_base.h"
 #include <gnuradio/fft/window.h>
 #include <algorithm>
+#include <stdexcept>
 
 namespace gr {
   namespace tcola {
@@ -42,11 +43,11 @@ namespace gr {
     tcola_base::tcola_base(unsigned windowSize, unsigned hopSize, const std::vector<float> &window)
     {
       if( hopSize <= 0)
-        throw std::invalid_argument("time_compression_impl: hopSize must be > 0");
+        throw std::invalid_argument("tcol_base: hopSize must be > 0");
       if( windowSize < hopSize)
-        throw std::invalid_argument("time_compression_impl: windowSize must be > hopSize");
+        throw std::invalid_argument("tcol_base: windowSize must be > hopSize");
       if( (float)windowSize/hopSize != floor((float)windowSize/hopSize) )
-        throw std::invalid_argument("time_compression_impl: windowSize must be divisible by hopSize");    
+        throw std::invalid_argument("tcol_base: windowSize must be divisible by hopSize");    
 
       this->d_hop_size = hopSize;
       this->d_window_size = windowSize;

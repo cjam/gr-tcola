@@ -22,7 +22,7 @@
 from gnuradio import gr, gr_unittest
 from gnuradio import blocks
 import numpy as np
-from tcola_swig import time_compression
+from tcola_swig import time_compression_f as time_compression
 
 class qa_time_compression (gr_unittest.TestCase):
 
