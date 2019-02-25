@@ -53,27 +53,3 @@ install(TARGETS gnuradio-tcola
     ARCHIVE DESTINATION lib${LIB_SUFFIX} # .lib file
     RUNTIME DESTINATION bin              # .dll file
 )
-
-########################################################################
-# Build and register unit test
-########################################################################
-include(GrTest)
-
-include_directories(${CPPUNIT_INCLUDE_DIRS})
-
-list(APPEND test_tcola_sources
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_tcola.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/qa_tcola.cc
-)
-
-add_executable(test-tcola ${test_tcola_sources})
-
-target_link_libraries(
-  test-tcola
-  ${GNURADIO_RUNTIME_LIBRARIES}
-  ${Boost_LIBRARIES}
-  ${CPPUNIT_LIBRARIES}
-  gnuradio-tcola
-)
-
-GR_ADD_TEST(test_tcola test-tcola)
