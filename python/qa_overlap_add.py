@@ -21,7 +21,7 @@
 
 from gnuradio import gr, gr_unittest
 from gnuradio import blocks
-from tcola_swig import overlap_add_f
+from tcola_swig import overlap_add_f, overlap_add_c
 import numpy as np
 
 class qa_overlap_add (gr_unittest.TestCase):
@@ -31,77 +31,67 @@ class qa_overlap_add (gr_unittest.TestCase):
 
     def tearDown (self):
         self.tb = None
-
-    # def test_invalid_parameters (self):
-    #     with self.assertRaises(ValueError):
-    #         overlap_add_f(4,0,())
-        
-    #     with self.assertRaises(ValueError):
-    #         overlap_add_f(4,8,())
-        
-    #     with self.assertRaises(ValueError):
-    #         overlap_add_f(4,3,())
     
-    # def test_basic_m2_r1 (self):
-    #     M=2
-    #     R=1
-    #     src_data = (0,1,1,2,2,3,3,4,4)
-    #     expected_result = [0,1,2,3]
+    def test_basic_m2_r1 (self):
+        M=2
+        R=1
+        src_data = (0,1,1,2,2,3,3,4,4)
+        expected_result = [0,1,2,3]
         
-    #     src = blocks.vector_source_f(src_data)
-    #     op = overlap_add_f(M,R,np.ones(M))
-    #     #op.debug = True
-    #     # op.log("forecasted")
-    #     dst = blocks.vector_sink_f()
+        src = blocks.vector_source_f(src_data)
+        op = overlap_add_f(M,R,np.ones(M))
+        #op.debug = True
+        # op.log("forecasted")
+        dst = blocks.vector_sink_f()
 
-    #     self.tb.connect(src,op)
-    #     self.tb.connect(op,dst)
-    #     self.tb.run()
+        self.tb.connect(src,op)
+        self.tb.connect(op,dst)
+        self.tb.run()
 
-    #     # check data
-    #     result_data = dst.data()[:]
-    #     # print result_data, expected_result
-    #     self.assertFloatTuplesAlmostEqual(result_data,expected_result,4)
+        # check data
+        result_data = dst.data()[:]
+        # print result_data, expected_result
+        self.assertFloatTuplesAlmostEqual(result_data,expected_result,4)
 
-    # def test_m4_r1 (self):
-    #     M=4
-    #     R=1
-    #     src_data = [0,0,0,1,0,0,1,2,0,1,2,3,1,2,3,4,2,3,4,5,3,4,5,6,4,5,6,7,5,6,7,8,6,7,8,9,7,8]
-    #     expected_result = (0,0,0,1,2,3,4,5,6)
+    def test_m4_r1 (self):
+        M=4
+        R=1
+        src_data = [0,0,0,1,0,0,1,2,0,1,2,3,1,2,3,4,2,3,4,5,3,4,5,6,4,5,6,7,5,6,7,8,6,7,8,9,7,8]
+        expected_result = (0,0,0,1,2,3,4,5,6)
         
-    #     src = blocks.vector_source_f(src_data)
-    #     op = overlap_add_f(M,R,np.ones(M))
-    #     #op.debug = True
-    #     dst = blocks.vector_sink_f()
+        src = blocks.vector_source_f(src_data)
+        op = overlap_add_f(M,R,np.ones(M))
+        #op.debug = True
+        dst = blocks.vector_sink_f()
 
-    #     self.tb.connect(src,op)
-    #     self.tb.connect(op,dst)
-    #     self.tb.run()
+        self.tb.connect(src,op)
+        self.tb.connect(op,dst)
+        self.tb.run()
 
-    #     # check data
-    #     result_data = dst.data()[:]
-    #     # print result_data, expected_result
-    #     self.assertFloatTuplesAlmostEqual(result_data,expected_result,4)
+        # check data
+        result_data = dst.data()[:]
+        # print result_data, expected_result
+        self.assertFloatTuplesAlmostEqual(result_data,expected_result,4)
 
-    # def test_m4_r2 (self):
-    #     M=4
-    #     R=2
-    #     src_data = [0,0,0,1,0,1,2,3,2,3,4,5,4,5,6,7,6,7]
-    #     expected_result = (0,0,0,1,2,3,4,5,)
+    def test_m4_r2 (self):
+        M=4
+        R=2
+        src_data = [0,0,0,1,0,1,2,3,2,3,4,5,4,5,6,7,6,7]
+        expected_result = (0,0,0,1,2,3,4,5,)
         
-    #     src = blocks.vector_source_f(src_data)
-    #     op = overlap_add_f(M,R,np.ones(M))
+        src = blocks.vector_source_f(src_data)
+        op = overlap_add_f(M,R,np.ones(M))
 
-    #     dst = blocks.vector_sink_f()
+        dst = blocks.vector_sink_f()
 
-    #     self.tb.connect(src,op)
-    #     self.tb.connect(op,dst)
-    #     self.tb.run()
+        self.tb.connect(src,op)
+        self.tb.connect(op,dst)
+        self.tb.run()
 
-    #     # check data
-    #     result_data = dst.data()[:]
-    #     print result_data, expected_result
-    #     self.assertFloatTuplesAlmostEqual(result_data,expected_result,4)
+        # check data
+        result_data = dst.data()[:]
+        # print result_data, expected_result
+        self.assertFloatTuplesAlmostEqual(result_data,expected_result,4)
 
     def test_window_overlapping (self):
         M = 8
@@ -127,6 +117,36 @@ class qa_overlap_add (gr_unittest.TestCase):
         #print result_data,expected_result
         self.assertFloatTuplesAlmostEqual(result_data,expected_result,4)
 
+class qa_overlap_add_complex(gr_unittest.TestCase):
+
+    def setUp (self):
+        self.tb = gr.top_block ()
+
+    def tearDown (self):
+        self.tb = None
+
+    def test_basic_m2_r1 (self):
+        M=2
+        R=1
+        src_data = (0,1+1j,1+1j,2+2j,2+2j,3+3j,3+3j,4+4j,4+4j)
+        expected_result = [0,1+1j,2+2j,3+3j]
+        
+        src = blocks.vector_source_c(src_data)
+        op = overlap_add_c(M,R,np.ones(M))
+        #op.debug = True
+        # op.log("forecasted")
+        dst = blocks.vector_sink_c()
+
+        self.tb.connect(src,op)
+        self.tb.connect(op,dst)
+        self.tb.run()
+
+        # check data
+        result_data = dst.data()[:]
+        # print result_data, expected_result
+        self.assertFloatTuplesAlmostEqual(result_data,expected_result,4)
+
 
 if __name__ == '__main__':
     gr_unittest.run(qa_overlap_add, "qa_overlap_add.xml")
+    gr_unittest.run(qa_overlap_add_complex, "qa_overlap_add_complex.xml")

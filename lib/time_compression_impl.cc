@@ -66,8 +66,8 @@ namespace gr {
         gr_vector_const_void_star &input_items,
         gr_vector_void_star &output_items)
     {
-      const float *in = (const float *) input_items[0];
-      float *out = (float *) output_items[0];
+      const T *in = (const T *) input_items[0];
+      T *out = (T *) output_items[0];
 
       unsigned outCount = 0;
 
@@ -77,11 +77,10 @@ namespace gr {
         // Output windows of the input signal
         for (int j=0; j<this->window_size(); j++)
         {
-          float num = in[startIndex+j]*this->window().at(j);
+          T num = in[startIndex+j]*this->window().at(j);
           out[outCount++] = num;
         }
-      }
-
+      } 
       // Tell runtime system how many output items we produced.
       return outCount;
     }

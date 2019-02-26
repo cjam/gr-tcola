@@ -27,7 +27,8 @@ description here (python/__init__.py).
 try:
 	# this might fail if the module is python-only
 	from tcola_swig import *
-except ImportError:
+except ImportError as error:
+	print(error)
 	pass
 
 
